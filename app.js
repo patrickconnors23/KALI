@@ -366,6 +366,7 @@ function receivedPostback(event) {
 
   switch (payload) {
     case 'GET_STARTED':
+      var text = "Hi, I'm DataGenomix's vote bot. Are you registered to vote?";
       var buttons = [{
         type: "postback",
         title: "Yes",
@@ -381,10 +382,24 @@ function receivedPostback(event) {
         title: "I don't know",
         payload: "UNSURE_IF_REGISTERED"
       }]
-      sendButtonMessage(senderID,buttons);
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    case 'IS_REGISTERED':
+      sendTextMessage(senderID,"You better be... How else can I help you?");
+      break;
+    case 'NOT_REGISTERED':
+      sendTextMessage(senderID,"Don't worry, I got this.");
+      break;
+    case 'UNSURE_IF_REGISTERED':
+      sendTextMessage(senderID,"Let's check on that...");
       break;
     default:
-      sendTextMessage(senderID, "Postback called");
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "DEFAULT"
+      };
+      sendTextMessage(senderID, buttons, "Postback called");
   }
 }
 
@@ -568,7 +583,7 @@ function sendTextMessage(recipientId, messageText) {
  * Send a button message using the Send API.
  *
  */
-function sendButtonMessage(recipientId,buttons) {
+function sendButtonMessage(recipientId,buttons,text) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -578,7 +593,7 @@ function sendButtonMessage(recipientId,buttons) {
         type: "template",
         payload: {
           template_type: "button",
-          text: "This is test text",
+          text: text,
           // buttons:[{
           //   type: "web_url",
           //   url: "https://www.oculus.com/en-us/rift/",
