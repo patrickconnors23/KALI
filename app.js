@@ -412,7 +412,7 @@ function receivedPostback(event) {
       sendButtonMessage(senderID,buttons,text);
       break;
     case 'NOT_REGISTERED':
-      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?";
+      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
       var buttons = [{
         type: "postback",
         title: "Yes",
