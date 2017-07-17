@@ -772,7 +772,7 @@ function sendTypingOn(recipientId) {
   callSendAPI(messageData);
 }
 
-initializedWindow = () => {
+function initializeWindow() {
   var messageData = {
     // recipient: {
     //   id: recipientId
@@ -899,7 +899,7 @@ function createGreetingApi(data) {
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
   setGreetingText();
-  initializedWindow();
+  initializeWindow();
 });
 
 module.exports = app;
