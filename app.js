@@ -772,6 +772,37 @@ function sendTypingOn(recipientId) {
   callSendAPI(messageData);
 }
 
+initializedWindow () => {
+  var messageData = {
+    // recipient: {
+    //   id: recipientId
+    // },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "This is test text",
+          buttons:[{
+            type: "web_url",
+            url: "https://www.oculus.com/en-us/rift/",
+            title: "Open Web URL"
+          }, {
+            type: "postback",
+            title: "Trigger Postback",
+            payload: "DEVELOPER_DEFINED_PAYLOAD"
+          }, {
+            type: "phone_number",
+            title: "Call Phone Number",
+            payload: "+16505551234"
+          }]
+        }
+      }
+    }
+  };
+  callSendAPI(messageData);
+}
+
 /*
  * Turn typing indicator off
  *
@@ -868,6 +899,7 @@ function createGreetingApi(data) {
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
   setGreetingText();
+  initializedWindow();
 });
 
 module.exports = app;
