@@ -772,7 +772,7 @@ function sendTypingOn(recipientId) {
   callSendAPI(messageData);
 }
 
-initializedWindow () => {
+initializedWindow = () => {
   var messageData = {
     // recipient: {
     //   id: recipientId
