@@ -365,7 +365,7 @@ function receivedPostback(event) {
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
   switch (payload) {
-    case 'Get Started':
+    case 'GET_STARTED':
       sendButtonMessage(senderID);
       break;
     default:
