@@ -311,6 +311,7 @@ function receivedMessage(event) {
         break;
       case 'oh' || 'ohio' || 'OH' || 'Ohio':
         sendTextMessage(senderID, "I'll go look up some info on voting in Ohio.");
+        sendTextMessage(senderID, "https://register2.rockthevote.com/registrants/new/OH/");
         break;
 
       default:
@@ -391,17 +392,17 @@ function receivedPostback(event) {
       var text = ("You better be... How else can I help you?");
       var buttons = [{
         type: "postback",
-        title: "Find my poll location",
+        title: "Find Poll Locations",
         payload: "FIND_POLL"
       },
       {
         type: "postback",
-        title: "Find early voting locations",
+        title: "Early Voting Locations",
         payload: "FIND_EARLY_VOTING"
       },
       {
         type: "postback",
-        title: "Get an Absentee Ballot",
+        title: "Absentee Ballots",
         payload: "FIND_ABSENTEE_BALLOT"
       }];
       sendButtonMessage(senderID,buttons,text);
