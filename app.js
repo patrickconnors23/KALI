@@ -403,11 +403,6 @@ function receivedPostback(event) {
         type: "postback",
         title: "Get an Absentee Ballot",
         payload: "FIND_ABSENTEE_BALLOT"
-      },
-      {
-        type: "postback",
-        title: "Switch States",
-        payload: "FIND_STATE"
       }];
       sendButtonMessage(senderID,buttons,text);
       break;
