@@ -366,7 +366,22 @@ function receivedPostback(event) {
 
   switch (payload) {
     case 'GET_STARTED':
-      sendButtonMessage(senderID);
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "IS_REGISTERED"
+      },
+      {
+        type: "postback",
+        title: "No",
+        payload: "NOT_REGISTERED"
+      },
+      {
+        type: "postback",
+        title: "I don't know",
+        payload: "UNSURE_IF_REGISTERED"
+      }]
+      sendButtonMessage(senderID,buttons);
       break;
     default:
       sendTextMessage(senderID, "Postback called");
@@ -553,7 +568,7 @@ function sendTextMessage(recipientId, messageText) {
  * Send a button message using the Send API.
  *
  */
-function sendButtonMessage(recipientId) {
+function sendButtonMessage(recipientId,buttons) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -564,19 +579,20 @@ function sendButtonMessage(recipientId) {
         payload: {
           template_type: "button",
           text: "This is test text",
-          buttons:[{
-            type: "web_url",
-            url: "https://www.oculus.com/en-us/rift/",
-            title: "Open Web URL"
-          }, {
-            type: "postback",
-            title: "Trigger Postback",
-            payload: "DEVELOPER_DEFINED_PAYLOAD"
-          }, {
-            type: "phone_number",
-            title: "Call Phone Number",
-            payload: "+16505551234"
-          }]
+          // buttons:[{
+          //   type: "web_url",
+          //   url: "https://www.oculus.com/en-us/rift/",
+          //   title: "Open Web URL"
+          // }, {
+          //   type: "postback",
+          //   title: "Trigger Postback",
+          //   payload: "DEVELOPER_DEFINED_PAYLOAD"
+          // }, {
+          //   type: "phone_number",
+          //   title: "Call Phone Number",
+          //   payload: "+16505551234"
+          // }]
+          buttons: buttons
         }
       }
     }
