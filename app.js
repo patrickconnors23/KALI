@@ -314,7 +314,7 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
+        sendTextMessage(senderID, "Sorry, I didn't understand that.");
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
@@ -391,13 +391,24 @@ function receivedPostback(event) {
       sendTextMessage(senderID,"You better be... How else can I help you?");
       break;
     case 'NOT_REGISTERED':
-      sendTextMessage(senderID,"Don't worry, I got this.");
+      var text = "Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?";
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "PERMISSION_TO_HELP"
+      },
+      {
+        type: "postback",
+        title: "No",
+        payload: "PERMISSION_DENIED"
+      }]
+      sendButtonMessage(senderID,buttons,text);
       break;
     case 'UNSURE_IF_REGISTERED':
       sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
       break;
     case 'PERMISSION_TO_HELP':
-      sendTextMessage(senderID,"Let's check on that...");
+      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
       break;
     case 'PERMISSION_DENIED':
       var text = "Head back to the main menu?";
@@ -570,7 +581,7 @@ function setGreetingText() {
   var greetingData = {
     setting_type: "greeting",
     greeting:{
-      text:"Hi, I'm a Data Genomix's voter bot, let's get you registered to vote!"
+      text:"Hi, I'm Data Genomix's voter bot, let's get you registered to vote!"
     }
   };
   createGreetingApi(greetingData);
