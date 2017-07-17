@@ -309,6 +309,9 @@ function receivedMessage(event) {
       case 'account linking':
         sendAccountLinking(senderID);
         break;
+      case 'oh' || 'ohio' || 'OH' || 'Ohio':
+        sendTextMessage(senderID, "I'll go look up some info on voting in Ohio.");
+        break;
 
       default:
         sendTextMessage(senderID, messageText);
