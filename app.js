@@ -388,7 +388,28 @@ function receivedPostback(event) {
       sendButtonMessage(senderID,buttons,text);
       break;
     case 'IS_REGISTERED':
-      sendTextMessage(senderID,"You better be... How else can I help you?");
+      var text = "You better be... How else can I help you?");
+      var buttons = [{
+        type: "postback",
+        title: "Find my poll location",
+        payload: "FIND_POLL"
+      },
+      {
+        type: "postback",
+        title: "Find early voting locations",
+        payload: "FIND_EARLY_VOTING"
+      },
+      {
+        type: "postback",
+        title: "Get an Absentee Ballot",
+        payload: "FIND_ABSENTEE_BALLOT"
+      },
+      {
+        type: "postback",
+        title: "Switch States",
+        payload: "FIND_STATE"
+      }];
+      sendButtonMessage(senderID,buttons,text);
       break;
     case 'NOT_REGISTERED':
       var text = "Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?";
@@ -414,7 +435,7 @@ function receivedPostback(event) {
       var text = "Head back to the main menu?";
       var buttons = [{
         type: "postback",
-        title: "Try Again",
+        title: "Yes",
         payload: "RESTART"
       }]
       sendButtonMessage(senderID,buttons,text);
