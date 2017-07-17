@@ -398,7 +398,7 @@ function receivedPostback(event) {
         type: "postback",
         title: "Yes",
         payload: "DEFAULT"
-      };
+      }];
       sendTextMessage(senderID, buttons, "Postback called");
   }
 }
