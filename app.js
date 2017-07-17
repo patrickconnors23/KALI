@@ -98,16 +98,22 @@ app.post('/webhook', function (req, res) {
       pageEntry.messaging.forEach(function(messagingEvent) {
         if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
+          console.log("hook it from 1");
         } else if (messagingEvent.message) {
           receivedMessage(messagingEvent);
+          console.log("hook it from 2");
         } else if (messagingEvent.delivery) {
           receivedDeliveryConfirmation(messagingEvent);
+          console.log("hook it from 3");
         } else if (messagingEvent.postback) {
           receivedPostback(messagingEvent);
+          console.log("hook it from 4");
         } else if (messagingEvent.read) {
           receivedMessageRead(messagingEvent);
+          console.log("hook it from 5");
         } else if (messagingEvent.account_linking) {
           receivedAccountLink(messagingEvent);
+          console.log("hook it from 6");
         } else {
           console.log("Webhook received unknown messagingEvent: ", messagingEvent);
         }
@@ -521,7 +527,7 @@ function setGreetingText() {
   var greetingData = {
     setting_type: "greeting",
     greeting:{
-      text:"Hi {{user_first_name}}, welcome!"
+      text:"Hi, I'm a Data Genomix's voter bot, let's get you registered to vote!"
     }
   };
   createGreetingApi(greetingData);
