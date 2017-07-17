@@ -391,7 +391,19 @@ function receivedPostback(event) {
       sendTextMessage(senderID,"Don't worry, I got this.");
       break;
     case 'UNSURE_IF_REGISTERED':
+      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      break;
+    case 'PERMISSION_TO_HELP':
       sendTextMessage(senderID,"Let's check on that...");
+      break;
+    case 'PERMISSION_DENIED':
+      var text = "Head back to the main menu?";
+      var buttons = [{
+        type: "postback",
+        title: "Try Again",
+        payload: "RESTART"
+      }]
+      sendButtonMessage(senderID,buttons,text);
       break;
     default:
       var buttons = [{
