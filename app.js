@@ -310,8 +310,7 @@ function receivedMessage(event) {
         sendAccountLinking(senderID);
         break;
       case 'oh' || 'ohio' || 'OH' || 'Ohio':
-        sendTextMessage(senderID, "I'll go look up some info on voting in Ohio.");
-        sendTextMessage(senderID, "https://register2.rockthevote.com/registrants/new/OH/");
+        stateInfoButton(senderID, "Ohio");
         break;
 
       default:
@@ -323,7 +322,7 @@ function receivedMessage(event) {
 }
 
 function stateInfoButton(senderID,state) {
-  var text = "I'll go look up some info on voting in Ohio.";
+  var text = "I'll go look up some info on voting in"+state+".";
   var buttons = [{
     "type":"web_url",
     "url":"https://petersfancyapparel.com/classic_white_tshirt",
