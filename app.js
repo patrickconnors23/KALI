@@ -933,7 +933,7 @@ function callSendAPI(messageData) {
       console.log(error);
     }else{
       console.log("User",user);
-      if(user == [] || user == null || user = undefined){
+      if(user == [] || user == null || user == undefined){
         User.addUser({"fbID":senderID,"lastMessage":"[]"},(error,response)=>{
           if(error){
             console.log("Create",error);
