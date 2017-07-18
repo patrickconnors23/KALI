@@ -325,9 +325,9 @@ function stateInfoButton(senderID,state) {
   var text = "I'll go look up some info on voting in"+state+".";
   var buttons = [{
     "type":"web_url",
-    "url":"https://petersfancyapparel.com/classic_white_tshirt",
+    "url":"https://register2.rockthevote.com/registrants/new/OH/",
     "title":"View Item",
-    "webview_height_ratio": "compact"
+    "webview_height_ratio": "full"
   },
   {
     type: "postback",
