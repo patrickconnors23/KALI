@@ -18,7 +18,7 @@ app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 console.log("hIT APP");
 
-User = require('../models/user.js');
+var User = require('./models/user.js');
 /*
  * Be sure to setup your config values before running this code. You can
  * set them using environment variables or modifying the config file in /config.
