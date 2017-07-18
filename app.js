@@ -936,7 +936,7 @@ function callSendAPI(messageData) {
       if(user == []){
         User.addUser({"fbID":senderID,"lastMessage":"[]"},(error,response)=>{
           if(error){
-            console.log("Create,"error);
+            console.log("Create",error);
           }else{
             console.log("Created",response);
           }
