@@ -322,24 +322,35 @@ function receivedMessage(event) {
 }
 
 function stateInfoButton(senderID,state) {
-  var text = "I'll go look up some info on voting in"+state+".";
-  var buttons = [{
-    "type":"web_url",
-    "url":"https://register2.rockthevote.com/registrants/new/OH/",
-    "title":"View Item",
-    "webview_height_ratio": "full"
-  },
-  {
-    type: "postback",
-    title: "No",
-    payload: "NOT_REGISTERED"
-  },
-  {
-    type: "postback",
-    title: "I don't know",
-    payload: "UNSURE_IF_REGISTERED"
-  }]
-  sendButtonMessage(senderID,buttons,text);
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "Vote in"+state,
+            subtitle: "Next-generation virtual reality",
+            item_url: "https://register2.rockthevote.com/registrants/new/OH/",
+            // image_url: SERVER_URL + "/assets/rift.png",
+            buttons: [{
+              type: "web_url",
+              url: "https://register2.rockthevote.com/registrants/new/OH/",
+              title: "Get Registered"
+            }, {
+              type: "postback",
+              title: "I'm registered",
+              payload: "IS_REGISTERED",
+            }],
+          }]
+        }
+      }
+    }
+  };
+  callSendAPI(messageData);
 }
 
 
