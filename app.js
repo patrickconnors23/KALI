@@ -927,11 +927,23 @@ function sendAccountLinking(recipientId) {
  *
  */
 function callSendAPI(messageData) {
-  User.getUserByFBID(messageData.recipient.id,(error,user)=>{
+  const senderID = messageData.recipient.id;
+  User.getUserByFBID(senderID,(error,user)=>{
     if(error){
       console.log(error);
     }else{
       console.log("User",user);
+      if(user == []){
+        User.addUser({"fbID":senderID,"lastMessage":"[]"},(error,response)=>{
+          if(error){
+            console.log("Create,"error);
+          }else{
+            console.log("Created",response);
+          }
+        });
+      }else{
+        console.log("Found");
+      }
     }
   });
   console.log(messageData.recipient.id);
