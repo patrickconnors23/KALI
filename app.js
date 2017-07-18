@@ -324,7 +324,7 @@ function receivedMessage(event) {
 function stateInfoButton(senderID,state) {
   var messageData = {
     recipient: {
-      id: recipientId
+      id: senderID
     },
     message: {
       attachment: {
