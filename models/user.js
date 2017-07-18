@@ -25,6 +25,11 @@ module.exports.getUserById = function (id,callback) {
   User.findById(id, callback);
 };
 
+module.exports.getUserByFBID = function (id,callback) {
+  var query = {fbID:id};
+  User.find(query, callback);
+};
+
 module.exports.addUser = function (user, callback) {
     User.create(user,callback);
 };

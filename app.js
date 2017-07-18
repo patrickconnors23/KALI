@@ -927,6 +927,13 @@ function sendAccountLinking(recipientId) {
  *
  */
 function callSendAPI(messageData) {
+  User.getUserByFBID(messageData.recipient.id,(error,user)=>{
+    if(error){
+      console.log(error);
+    }else{
+      console.log("User",user);
+    }
+  });
   console.log(messageData.recipient.id);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
