@@ -322,6 +322,27 @@ function receivedMessage(event) {
   }
 }
 
+function stateInfoButton(senderID,state) {
+  var text = "I'll go look up some info on voting in Ohio.";
+  var buttons = [{
+    "type":"web_url",
+    "url":"https://petersfancyapparel.com/classic_white_tshirt",
+    "title":"View Item",
+    "webview_height_ratio": "compact"
+  },
+  {
+    type: "postback",
+    title: "No",
+    payload: "NOT_REGISTERED"
+  },
+  {
+    type: "postback",
+    title: "I don't know",
+    payload: "UNSURE_IF_REGISTERED"
+  }]
+  sendButtonMessage(senderID,buttons,text);
+}
+
 
 /*
  * Delivery Confirmation Event
