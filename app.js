@@ -17,6 +17,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 console.log("hIT APP");
+
+User = require('../models/user');
 /*
  * Be sure to setup your config values before running this code. You can
  * set them using environment variables or modifying the config file in /config.
@@ -332,7 +334,7 @@ function stateInfoButton(senderID,state) {
         payload: {
           template_type: "generic",
           elements: [{
-            title: "Vote in"+state,
+            title: "Register in "+state,
             subtitle: "Next-generation virtual reality",
             item_url: "https://register2.rockthevote.com/registrants/new/OH/",
             // image_url: SERVER_URL + "/assets/rift.png",
@@ -428,7 +430,7 @@ function receivedPostback(event) {
       },
       {
         type: "postback",
-        title: "Early Voting Locations",
+        title: "Early Voting",
         payload: "FIND_EARLY_VOTING"
       },
       {
@@ -925,6 +927,7 @@ function sendAccountLinking(recipientId) {
  *
  */
 function callSendAPI(messageData) {
+  console.log(recipient.id);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
