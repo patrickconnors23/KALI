@@ -625,14 +625,14 @@ function receivedMessage(event) {
 }
 
 function processTextMessage(senderID,messageText) {
-  User.getUserByFBID(senderID, (error,user)=>{
+  User.getUserByFBID(senderID, (error,user) => {
     if(error){
       console.log(error);
     }else{
       const lastMessage = user.lastMessage;
       processText(senderID,messageText,lastMessage);
     }
-  };
+  });
 }
 
 function processText(senderID,messageText,lastMessage) {
