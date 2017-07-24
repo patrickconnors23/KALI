@@ -929,11 +929,12 @@ function sendAccountLinking(recipientId) {
 function callSendAPI(messageData) {
   console.log("MESSAGE",messageData.message);
   const message = messageData.message;
+  var text = ""
   if (message.attachment) {
-    const text = message.attachment.payload.text;
+    text = message.attachment.payload.text;
     console.log("Attachment::",message.attachment.payload);
   } else {
-    const text = message.text;
+    text = message.text;
     console.log("just text::",message.text);
   }
   console.log("MESSAGE_TEXT::",text);
