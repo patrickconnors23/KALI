@@ -797,7 +797,7 @@ function earlyVotingInfoButton(senderID,state) {
       id: senderID
     },
     message: {
-      text: {"Here's what I found for early voting in "+state},
+      text: {"Here's what I found for early voting in Ohio"},
       attachment: {
         type: "template",
         payload: {
