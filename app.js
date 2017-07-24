@@ -680,7 +680,6 @@ function registrationLinkProcess(formattedText,senderID) {
 function moreActionsProcess(formattedText,senderID) {
   switch (formattedText) {
     case 'early':
-      sendTextMessage(senderID, "Lemme check on that...");
       sendTextMessage(senderID,"Here's what I found for early voting in Ohio");
       earlyVotingInfoButton(senderID,"Ohio");
       break;
@@ -806,6 +805,11 @@ function earlyVotingInfoButton(senderID,state) {
           elements: [{
             title: "Early Voting in "+state,
             item_url: "https://register2.rockthevote.com/registrants/new/OH/",
+            buttons: [{
+              type: "web_url",
+              url: "https://register2.rockthevote.com/registrants/new/OH/",
+              title: "Vote Early"
+            }]
           }]
         }
       }
