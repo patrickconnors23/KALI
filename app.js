@@ -578,25 +578,6 @@ function isRegisteredProcess(formattedText,senderID) {
       }];
       sendButtonMessage(senderID,buttons,text);
       break;
-    case 'IS_REGISTERED':
-      var text = ("You better be... How else can I help you?");
-      var buttons = [{
-        type: "postback",
-        title: "Find Poll Locations",
-        payload: "FIND_POLL"
-      },
-      {
-        type: "postback",
-        title: "Early Voting",
-        payload: "FIND_EARLY_VOTING"
-      },
-      {
-        type: "postback",
-        title: "Absentee Ballots",
-        payload: "FIND_ABSENTEE_BALLOT"
-      }];
-      sendButtonMessage(senderID,buttons,text);
-      break;
     case 'no':
       var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
       var buttons = [{
@@ -840,41 +821,13 @@ function receivedPostback(event) {
       sendButtonMessage(senderID,buttons,text);
       break;
     case 'IS_REGISTERED':
-      // var text = ("You better be... How else can I help you?");
-      // var buttons = [{
-      //   type: "postback",
-      //   title: "Find Poll Locations",
-      //   payload: "FIND_POLL"
-      // },
-      // {
-      //   type: "postback",
-      //   title: "Early Voting",
-      //   payload: "FIND_EARLY_VOTING"
-      // },
-      // {
-      //   type: "postback",
-      //   title: "Absentee Ballots",
-      //   payload: "FIND_ABSENTEE_BALLOT"
-      // }];
-      // sendButtonMessage(senderID,buttons,text);
-      isRegisteredProcess("IS_REGISTERED",senderID);
+      isRegisteredProcess("yes",senderID);
       break;
     case 'NOT_REGISTERED':
-      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "PERMISSION_TO_HELP"
-      },
-      {
-        type: "postback",
-        title: "No",
-        payload: "PERMISSION_DENIED"
-      }]
-      sendButtonMessage(senderID,buttons,text);
+      isRegisteredProcess("no",senderID);
       break;
     case 'UNSURE_IF_REGISTERED':
-      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      isRegisteredProcess("know",senderID);
       break;
     case 'PERMISSION_TO_HELP':
       sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
