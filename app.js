@@ -816,7 +816,8 @@ function callSendAPI(messageData) {
     if (message.attachment.payload.text) {
       text = message.attachment.payload.text;
     } else {
-
+      console.log("NOTEXT",message.attachment.payload);
+      text = "no text";
     }
   } else {
     text = message.text;
