@@ -680,6 +680,8 @@ function registrationLinkProcess(formattedText,senderID) {
 function moreActionsProcess(formattedText,senderID) {
   switch (formattedText) {
     case 'early':
+      sendTextMessage(senderID, "Lemme check on that...");
+      sendTextMessage(senderID,"Here's what I found for early voting in Ohio");
       earlyVotingInfoButton(senderID,"Ohio");
       break;
     case 'poll':
@@ -797,7 +799,6 @@ function earlyVotingInfoButton(senderID,state) {
       id: senderID
     },
     message: {
-      text: "Here's what I found for early voting in Ohio",
       attachment: {
         type: "template",
         payload: {
