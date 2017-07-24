@@ -174,14 +174,6 @@ function verifyRequestSignature(req, res, buf) {
   }
 }
 
-/*
- * Authorization Event
- *
- * The value for 'optin.ref' is defined in the entry point. For the "Send to
- * Messenger" plugin, it is the 'data-ref' field. Read more at
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
- *
- */
 function receivedAuthentication(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -203,14 +195,6 @@ function receivedAuthentication(event) {
   sendTextMessage(senderID, "Authentication successful");
 }
 
-
-/*
- * Delivery Confirmation Event
- *
- * This event is sent to confirm the delivery of a message. Read more about
- * these fields at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-delivered
- *
- */
 function receivedDeliveryConfirmation(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -229,23 +213,6 @@ function receivedDeliveryConfirmation(event) {
   console.log("All message before %d were delivered.", watermark);
 }
 
-
-/*
- * Postback Event
- *
- * This event is called when a postback is tapped on a Structured Message.
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received
- *
- */
-
-
-/*
- * Message Read Event
- *
- * This event is called when a previously-sent message has been read.
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-read
- *
- */
 function receivedMessageRead(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -258,14 +225,6 @@ function receivedMessageRead(event) {
     "number %d", watermark, sequenceNumber);
 }
 
-/*
- * Account Link Event
- *
- * This event is called when the Link Account or UnLink Account action has been
- * tapped.
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/account-linking
- *
- */
 function receivedAccountLink(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -277,10 +236,6 @@ function receivedAccountLink(event) {
     "and auth code %s ", senderID, status, authCode);
 }
 
-/*
- * Send an image using the Send API.
- *
- */
 function sendImageMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -299,10 +254,6 @@ function sendImageMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a Gif using the Send API.
- *
- */
 function sendGifMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -321,10 +272,6 @@ function sendGifMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send audio using the Send API.
- *
- */
 function sendAudioMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -342,10 +289,6 @@ function sendAudioMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a video using the Send API.
- *
- */
 function sendVideoMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -364,10 +307,6 @@ function sendVideoMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a file using the Send API.
- *
- */
 function sendFileMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -395,10 +334,6 @@ function setGreetingText() {
   createGreetingApi(greetingData);
 }
 
-/*
- * Send a text message using the Send API.
- *
- */
 function sendTextMessage(recipientId, messageText) {
   var messageData = {
     recipient: {
@@ -413,10 +348,6 @@ function sendTextMessage(recipientId, messageText) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a button message using the Send API.
- *
- */
 function sendButtonMessage(recipientId,buttons,text) {
   var messageData = {
     recipient: {
@@ -437,10 +368,6 @@ function sendButtonMessage(recipientId,buttons,text) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a Structured Message (Generic Message type) using the Send API.
- *
- */
 function sendGenericMessage(recipientId) {
   var messageData = {
     recipient: {
@@ -488,10 +415,6 @@ function sendGenericMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a receipt message using the Send API.
- *
- */
 function sendReceiptMessage(recipientId) {
   // Generate a random receipt ID as the API requires a unique ID
   var receiptId = "order" + Math.floor(Math.random()*1000);
@@ -554,10 +477,6 @@ function sendReceiptMessage(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a message with Quick Reply buttons.
- *
- */
 function sendQuickReply(recipientId) {
   var messageData = {
     recipient: {
@@ -588,10 +507,6 @@ function sendQuickReply(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a read receipt to indicate the message has been read
- *
- */
 function sendReadReceipt(recipientId) {
   console.log("Sending a read receipt to mark message as seen");
 
@@ -605,10 +520,6 @@ function sendReadReceipt(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Turn typing indicator on
- *
- */
 function sendTypingOn(recipientId) {
   console.log("Turning typing indicator on");
 
@@ -622,10 +533,6 @@ function sendTypingOn(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Turn typing indicator off
- *
- */
 function sendTypingOff(recipientId) {
   console.log("Turning typing indicator off");
 
@@ -639,10 +546,6 @@ function sendTypingOff(recipientId) {
   callSendAPI(messageData);
 }
 
-/*
- * Send a message with the account linking call-to-action
- *
- */
 function sendAccountLinking(recipientId) {
   var messageData = {
     recipient: {
@@ -715,75 +618,88 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
+    processTextMessage(senderID,messageText);
 
-    // If we receive a text message, check to see if it matches any special
-    // keywords and send back the corresponding example. Otherwise, just echo
-    // the text we received.
-    switch (messageText) {
-      case 'Get Started':
-        sendButtonMessage(senderID);
-        break;
-      case 'image':
-        sendImageMessage(senderID);
-        break;
-
-      case 'gif':
-        sendGifMessage(senderID);
-        break;
-
-      case 'audio':
-        sendAudioMessage(senderID);
-        break;
-
-      case 'video':
-        sendVideoMessage(senderID);
-        break;
-
-      case 'file':
-        sendFileMessage(senderID);
-        break;
-
-      case 'button':
-        sendButtonMessage(senderID);
-        break;
-
-      case 'generic':
-        sendGenericMessage(senderID);
-        break;
-
-      case 'receipt':
-        sendReceiptMessage(senderID);
-        break;
-
-      case 'quick reply':
-        sendQuickReply(senderID);
-        break;
-
-      case 'read receipt':
-        sendReadReceipt(senderID);
-        break;
-
-      case 'typing on':
-        sendTypingOn(senderID);
-        break;
-
-      case 'typing off':
-        sendTypingOff(senderID);
-        break;
-
-      case 'account linking':
-        sendAccountLinking(senderID);
-        break;
-      case 'oh' || 'ohio' || 'OH' || 'Ohio':
-        stateInfoButton(senderID, "Ohio");
-        break;
-
-      default:
-        sendTextMessage(senderID, "Sorry, I didn't understand that.");
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
+}
+
+function processTextMessage(senderID,messageText) {
+  User.getUserByFBID(senderID,(error,user)=>{
+    if(error){
+      console.log(error);
+    }else{
+      const lastMessage = user.lastMessage;
+      processText(senderID,messageText,lastMessage)
+    }
+  }
+}
+
+function processText(senderID,messageText,lastMessage) {
+  console.log("PROCESSSSING::",senderID,messageText,lastMessage);
+  switch (messageText) {
+    case 'Get Started':
+      sendButtonMessage(senderID);
+      break;
+    case 'image':
+      sendImageMessage(senderID);
+      break;
+
+    case 'gif':
+      sendGifMessage(senderID);
+      break;
+
+    case 'audio':
+      sendAudioMessage(senderID);
+      break;
+
+    case 'video':
+      sendVideoMessage(senderID);
+      break;
+
+    case 'file':
+      sendFileMessage(senderID);
+      break;
+
+    case 'button':
+      sendButtonMessage(senderID);
+      break;
+
+    case 'generic':
+      sendGenericMessage(senderID);
+      break;
+
+    case 'receipt':
+      sendReceiptMessage(senderID);
+      break;
+
+    case 'quick reply':
+      sendQuickReply(senderID);
+      break;
+
+    case 'read receipt':
+      sendReadReceipt(senderID);
+      break;
+
+    case 'typing on':
+      sendTypingOn(senderID);
+      break;
+
+    case 'typing off':
+      sendTypingOff(senderID);
+      break;
+
+    case 'account linking':
+      sendAccountLinking(senderID);
+      break;
+    case 'oh' || 'ohio' || 'OH' || 'Ohio':
+      stateInfoButton(senderID, "Ohio");
+      break;
+
+    default:
+      sendTextMessage(senderID, "Sorry, I didn't understand that.");
 }
 
 function stateInfoButton(senderID,state) {
@@ -914,7 +830,6 @@ function receivedPostback(event) {
  *
  */
 function callSendAPI(messageData) {
-  console.log("MESSAGE",messageData.message);
   const message = messageData.message;
   var text = ""
   if (message.attachment) {
@@ -922,7 +837,6 @@ function callSendAPI(messageData) {
   } else {
     text = message.text;
   }
-  console.log("MESSAGE_TEXT::",text);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
@@ -943,13 +857,11 @@ function callSendAPI(messageData) {
               if(error){
                 console.log("Create",error);
               }else{
-                console.log("Created",response);
                 response.lastMessage = text;
                 response.save();
               }
             });
           }else{
-            console.log("Found");
             user.lastMessage = text;
             user.save();
           }
