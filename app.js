@@ -930,10 +930,13 @@ function callSendAPI(messageData) {
   console.log("MESSAGE",messageData.message);
   const message = messageData.message;
   if (message.attachment) {
+    const text = message.attachment.payload.text;
     console.log("Attachment::",message.attachment.payload);
   } else {
+    const text = message.text;
     console.log("just text::",message.text);
   }
+  console.log("MESSAGE_TEXT::",text);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
