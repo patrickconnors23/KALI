@@ -203,158 +203,6 @@ function receivedAuthentication(event) {
   sendTextMessage(senderID, "Authentication successful");
 }
 
-/*
- * Message Event
- *
- * This event is called when a message is sent to your page. The 'message'
- * object format can vary depending on the kind of message that was received.
- * Read more at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-received
- *
- * For this example, we're going to echo any text that we get. If we get some
- * special keywords ('button', 'generic', 'receipt'), then we'll send back
- * examples of those bubbles to illustrate the special message bubbles we've
- * created. If we receive a message with an attachment (image, video, audio),
- * then we'll simply confirm that we've received the attachment.
- *
- */
-function receivedMessage(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
-  var message = event.message;
-
-  console.log("Received message for user %d and page %d at %d with message:",
-    senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
-
-  var isEcho = message.is_echo;
-  var messageId = message.mid;
-  var appId = message.app_id;
-  var metadata = message.metadata;
-
-  // You may get a text or attachment but not both
-  var messageText = message.text;
-  var messageAttachments = message.attachments;
-  var quickReply = message.quick_reply;
-
-  if (isEcho) {
-    // Just logging message echoes to console
-    console.log("Received echo for message %s and app %d with metadata %s",
-      messageId, appId, metadata);
-    return;
-  } else if (quickReply) {
-    var quickReplyPayload = quickReply.payload;
-    console.log("Quick reply for message %s with payload %s",
-      messageId, quickReplyPayload);
-
-    sendTextMessage(senderID, "Quick reply tapped");
-    return;
-  }
-
-  if (messageText) {
-
-    // If we receive a text message, check to see if it matches any special
-    // keywords and send back the corresponding example. Otherwise, just echo
-    // the text we received.
-    switch (messageText) {
-      case 'Get Started':
-        sendButtonMessage(senderID);
-        break;
-      case 'image':
-        sendImageMessage(senderID);
-        break;
-
-      case 'gif':
-        sendGifMessage(senderID);
-        break;
-
-      case 'audio':
-        sendAudioMessage(senderID);
-        break;
-
-      case 'video':
-        sendVideoMessage(senderID);
-        break;
-
-      case 'file':
-        sendFileMessage(senderID);
-        break;
-
-      case 'button':
-        sendButtonMessage(senderID);
-        break;
-
-      case 'generic':
-        sendGenericMessage(senderID);
-        break;
-
-      case 'receipt':
-        sendReceiptMessage(senderID);
-        break;
-
-      case 'quick reply':
-        sendQuickReply(senderID);
-        break;
-
-      case 'read receipt':
-        sendReadReceipt(senderID);
-        break;
-
-      case 'typing on':
-        sendTypingOn(senderID);
-        break;
-
-      case 'typing off':
-        sendTypingOff(senderID);
-        break;
-
-      case 'account linking':
-        sendAccountLinking(senderID);
-        break;
-      case 'oh' || 'ohio' || 'OH' || 'Ohio':
-        stateInfoButton(senderID, "Ohio");
-        break;
-
-      default:
-        sendTextMessage(senderID, "Sorry, I didn't understand that.");
-    }
-  } else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
-  }
-}
-
-function stateInfoButton(senderID,state) {
-  var messageData = {
-    recipient: {
-      id: senderID
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "Register in "+state,
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://register2.rockthevote.com/registrants/new/OH/",
-            // image_url: SERVER_URL + "/assets/rift.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://register2.rockthevote.com/registrants/new/OH/",
-              title: "Get Registered"
-            }, {
-              type: "postback",
-              title: "I'm registered",
-              payload: "IS_REGISTERED",
-            }],
-          }]
-        }
-      }
-    }
-  };
-  callSendAPI(messageData);
-}
-
 
 /*
  * Delivery Confirmation Event
@@ -389,95 +237,7 @@ function receivedDeliveryConfirmation(event) {
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received
  *
  */
-function receivedPostback(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfPostback = event.timestamp;
 
-  // The 'payload' param is a developer-defined field which is set in a postback
-  // button for Structured Messages.
-  var payload = event.postback.payload;
-
-  console.log("Received postback for user %d and page %d with payload '%s' " +
-    "at %d", senderID, recipientID, payload, timeOfPostback);
-
-  switch (payload) {
-    case 'GET_STARTED':
-      var text = "Hi, I'm DataGenomix's vote bot. Are you registered to vote?";
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "IS_REGISTERED"
-      },
-      {
-        type: "postback",
-        title: "No",
-        payload: "NOT_REGISTERED"
-      },
-      {
-        type: "postback",
-        title: "I don't know",
-        payload: "UNSURE_IF_REGISTERED"
-      }]
-      sendButtonMessage(senderID,buttons,text);
-      break;
-    case 'IS_REGISTERED':
-      var text = ("You better be... How else can I help you?");
-      var buttons = [{
-        type: "postback",
-        title: "Find Poll Locations",
-        payload: "FIND_POLL"
-      },
-      {
-        type: "postback",
-        title: "Early Voting",
-        payload: "FIND_EARLY_VOTING"
-      },
-      {
-        type: "postback",
-        title: "Absentee Ballots",
-        payload: "FIND_ABSENTEE_BALLOT"
-      }];
-      sendButtonMessage(senderID,buttons,text);
-      break;
-    case 'NOT_REGISTERED':
-      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "PERMISSION_TO_HELP"
-      },
-      {
-        type: "postback",
-        title: "No",
-        payload: "PERMISSION_DENIED"
-      }]
-      sendButtonMessage(senderID,buttons,text);
-      break;
-    case 'UNSURE_IF_REGISTERED':
-      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
-      break;
-    case 'PERMISSION_TO_HELP':
-      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
-      break;
-    case 'PERMISSION_DENIED':
-      var text = "Head back to the main menu?";
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "RESTART"
-      }]
-      sendButtonMessage(senderID,buttons,text);
-      break;
-    default:
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "DEFAULT"
-      }];
-      sendTextMessage(senderID, buttons, "Postback called");
-  }
-}
 
 /*
  * Message Read Event
@@ -579,7 +339,6 @@ function sendAudioMessage(recipientId) {
       }
     }
   };
-
   callSendAPI(messageData);
 }
 
@@ -623,7 +382,6 @@ function sendFileMessage(recipientId) {
       }
     }
   };
-
   callSendAPI(messageData);
 }
 
@@ -670,19 +428,6 @@ function sendButtonMessage(recipientId,buttons,text) {
         payload: {
           template_type: "button",
           text: text,
-          // buttons:[{
-          //   type: "web_url",
-          //   url: "https://www.oculus.com/en-us/rift/",
-          //   title: "Open Web URL"
-          // }, {
-          //   type: "postback",
-          //   title: "Trigger Postback",
-          //   payload: "DEVELOPER_DEFINED_PAYLOAD"
-          // }, {
-          //   type: "phone_number",
-          //   title: "Call Phone Number",
-          //   payload: "+16505551234"
-          // }]
           buttons: buttons
         }
       }
@@ -919,6 +664,248 @@ function sendAccountLinking(recipientId) {
   };
 
   callSendAPI(messageData);
+}
+
+/*
+ * Message Event
+ *
+ * This event is called when a message is sent to your page. The 'message'
+ * object format can vary depending on the kind of message that was received.
+ * Read more at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-received
+ *
+ * For this example, we're going to echo any text that we get. If we get some
+ * special keywords ('button', 'generic', 'receipt'), then we'll send back
+ * examples of those bubbles to illustrate the special message bubbles we've
+ * created. If we receive a message with an attachment (image, video, audio),
+ * then we'll simply confirm that we've received the attachment.
+ *
+ */
+function receivedMessage(event) {
+  var senderID = event.sender.id;
+  var recipientID = event.recipient.id;
+  var timeOfMessage = event.timestamp;
+  var message = event.message;
+
+  console.log("Received message for user %d and page %d at %d with message:",
+    senderID, recipientID, timeOfMessage);
+  console.log(JSON.stringify(message));
+
+  var isEcho = message.is_echo;
+  var messageId = message.mid;
+  var appId = message.app_id;
+  var metadata = message.metadata;
+
+  // You may get a text or attachment but not both
+  var messageText = message.text;
+  var messageAttachments = message.attachments;
+  var quickReply = message.quick_reply;
+
+  if (isEcho) {
+    // Just logging message echoes to console
+    console.log("Received echo for message %s and app %d with metadata %s",
+      messageId, appId, metadata);
+    return;
+  } else if (quickReply) {
+    var quickReplyPayload = quickReply.payload;
+    console.log("Quick reply for message %s with payload %s",
+      messageId, quickReplyPayload);
+
+    sendTextMessage(senderID, "Quick reply tapped");
+    return;
+  }
+
+  if (messageText) {
+
+    // If we receive a text message, check to see if it matches any special
+    // keywords and send back the corresponding example. Otherwise, just echo
+    // the text we received.
+    switch (messageText) {
+      case 'Get Started':
+        sendButtonMessage(senderID);
+        break;
+      case 'image':
+        sendImageMessage(senderID);
+        break;
+
+      case 'gif':
+        sendGifMessage(senderID);
+        break;
+
+      case 'audio':
+        sendAudioMessage(senderID);
+        break;
+
+      case 'video':
+        sendVideoMessage(senderID);
+        break;
+
+      case 'file':
+        sendFileMessage(senderID);
+        break;
+
+      case 'button':
+        sendButtonMessage(senderID);
+        break;
+
+      case 'generic':
+        sendGenericMessage(senderID);
+        break;
+
+      case 'receipt':
+        sendReceiptMessage(senderID);
+        break;
+
+      case 'quick reply':
+        sendQuickReply(senderID);
+        break;
+
+      case 'read receipt':
+        sendReadReceipt(senderID);
+        break;
+
+      case 'typing on':
+        sendTypingOn(senderID);
+        break;
+
+      case 'typing off':
+        sendTypingOff(senderID);
+        break;
+
+      case 'account linking':
+        sendAccountLinking(senderID);
+        break;
+      case 'oh' || 'ohio' || 'OH' || 'Ohio':
+        stateInfoButton(senderID, "Ohio");
+        break;
+
+      default:
+        sendTextMessage(senderID, "Sorry, I didn't understand that.");
+    }
+  } else if (messageAttachments) {
+    sendTextMessage(senderID, "Message with attachment received");
+  }
+}
+
+function stateInfoButton(senderID,state) {
+  var messageData = {
+    recipient: {
+      id: senderID
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "Register in "+state,
+            subtitle: "Next-generation virtual reality",
+            item_url: "https://register2.rockthevote.com/registrants/new/OH/",
+            // image_url: SERVER_URL + "/assets/rift.png",
+            buttons: [{
+              type: "web_url",
+              url: "https://register2.rockthevote.com/registrants/new/OH/",
+              title: "Get Registered"
+            }, {
+              type: "postback",
+              title: "I'm registered",
+              payload: "IS_REGISTERED",
+            }],
+          }]
+        }
+      }
+    }
+  };
+  callSendAPI(messageData);
+}
+
+function receivedPostback(event) {
+  var senderID = event.sender.id;
+  var recipientID = event.recipient.id;
+  var timeOfPostback = event.timestamp;
+
+  // The 'payload' param is a developer-defined field which is set in a postback
+  // button for Structured Messages.
+  var payload = event.postback.payload;
+
+  console.log("Received postback for user %d and page %d with payload '%s' " +
+    "at %d", senderID, recipientID, payload, timeOfPostback);
+
+  switch (payload) {
+    case 'GET_STARTED':
+      var text = "Hi, I'm DataGenomix's vote bot. Are you registered to vote?";
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "IS_REGISTERED"
+      },
+      {
+        type: "postback",
+        title: "No",
+        payload: "NOT_REGISTERED"
+      },
+      {
+        type: "postback",
+        title: "I don't know",
+        payload: "UNSURE_IF_REGISTERED"
+      }]
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    case 'IS_REGISTERED':
+      var text = ("You better be... How else can I help you?");
+      var buttons = [{
+        type: "postback",
+        title: "Find Poll Locations",
+        payload: "FIND_POLL"
+      },
+      {
+        type: "postback",
+        title: "Early Voting",
+        payload: "FIND_EARLY_VOTING"
+      },
+      {
+        type: "postback",
+        title: "Absentee Ballots",
+        payload: "FIND_ABSENTEE_BALLOT"
+      }];
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    case 'NOT_REGISTERED':
+      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "PERMISSION_TO_HELP"
+      },
+      {
+        type: "postback",
+        title: "No",
+        payload: "PERMISSION_DENIED"
+      }]
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    case 'UNSURE_IF_REGISTERED':
+      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      break;
+    case 'PERMISSION_TO_HELP':
+      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      break;
+    case 'PERMISSION_DENIED':
+      var text = "Head back to the main menu?";
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "RESTART"
+      }]
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    default:
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "DEFAULT"
+      }];
+      sendTextMessage(senderID, buttons, "Postback called");
+  }
 }
 
 /*
