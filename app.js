@@ -927,25 +927,6 @@ function sendAccountLinking(recipientId) {
  *
  */
 function callSendAPI(messageData) {
-  const senderID = messageData.recipient.id;
-  User.getUserByFBID(senderID,(error,user)=>{
-    if(error){
-      console.log(error);
-    }else{
-      console.log("User",user);
-      if(!user){
-        User.addUser({"fbID":senderID,"lastMessage":"[]"},(error,response)=>{
-          if(error){
-            console.log("Create",error);
-          }else{
-            console.log("Created",response);
-          }
-        });
-      }else{
-        console.log("Found");
-      }
-    }
-  });
   console.log(messageData.recipient.id);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
@@ -957,6 +938,24 @@ function callSendAPI(messageData) {
     if (!error && response.statusCode == 200) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
+      User.getUserByFBID(recipientId,(error,user)=>{
+        if(error){
+          console.log(error);
+        }else{
+          console.log("User",user);
+          if(!user){
+            User.addUser({"fbID":senderID,"lastMessage":"[]"},(error,response)=>{
+              if(error){
+                console.log("Create",error);
+              }else{
+                console.log("Created",response);
+              }
+            });
+          }else{
+            console.log("Found");
+          }
+        }
+      });
 
       if (messageId) {
         console.log("Successfully sent message with id %s to recipient %s",
