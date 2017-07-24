@@ -637,6 +637,17 @@ function processTextMessage(senderID,messageText) {
 
 function processText(senderID,messageText,lastMessage) {
   console.log("PROCESSSSING::",senderID,messageText,lastMessage);
+  switch (lastMessage) {
+    case 'What state are you from? Type your state or postal code.':
+      sendTextMessage(senderID,"J asked about your state");
+      break;
+    case 'Sorry, I didn\'t understand that.':
+      sendTextMessage(senderID,"J asked about your state");
+    default:
+      sendTextMessage(senderID,"Couldn't figure out what last message was");
+      break;
+
+  }
   switch (messageText) {
     case 'Get Started':
       sendButtonMessage(senderID);
