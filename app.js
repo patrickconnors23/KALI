@@ -928,6 +928,12 @@ function sendAccountLinking(recipientId) {
  */
 function callSendAPI(messageData) {
   console.log("MESSAGE",messageData.message);
+  const message = messageData.message;
+  if (message.attachment) {
+    console.log("Attachment::",message.attachment.payload);
+  } else {
+    console.log("just text::",message.text);
+  }
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
