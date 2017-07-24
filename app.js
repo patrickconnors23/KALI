@@ -636,13 +636,25 @@ function processTextMessage(senderID,messageText) {
 }
 
 function processText(senderID,messageText,lastMessage) {
-  console.log("PROCESSSSING::",senderID,messageText,lastMessage);
+  const formattedLast = lastMessage.toLowerCase();
+  const formattedText = messageText.toLowerCase();
   switch (lastMessage) {
     case 'What state are you from? Type your state or postal code.':
-      sendTextMessage(senderID,"J asked about your state");
+      console.log("Caught a message");
+      switch (formattedText) {
+        case 'oh':
+          stateInfoButton(senderID, "Ohio");
+          break;
+        case 'ohio':
+          stateInfoButton(senderID, "Ohio");
+          break;
+        default:
+          sendTextMessage(senderID, "Sorry, I didn't understand that.");
+        }
       break;
     case 'Sorry, I didn\'t understand that.':
-      sendTextMessage(senderID,"J asked about your state");
+      console.log("Caught a message");
+      break;
     case 'You better be... How else can I help you?':
       console.log("Caught a message");
       break;
@@ -650,6 +662,12 @@ function processText(senderID,messageText,lastMessage) {
       console.log("Caught a message");
       break;
     case "What state are you from? Type your state or postal code.":
+      console.log("Caught a message");
+      break;
+    case "Hi, I\'m DataGenomix\'s vote bot. Are you registered to vote?":
+      console.log("Caught a message");
+      break;
+    case "Head back to the main menu?":
       console.log("Caught a message");
       break;
     default:
