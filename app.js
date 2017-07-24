@@ -636,7 +636,6 @@ function processTextMessage(senderID,messageText) {
 }
 
 function processText(senderID,messageText,lastMessage) {
-  const formattedLast = lastMessage.toLowerCase();
   const formattedText = messageText.toLowerCase();
   switch (lastMessage) {
     case 'What state are you from? Type your state or postal code.':
@@ -814,7 +813,11 @@ function callSendAPI(messageData) {
   const message = messageData.message;
   var text = ""
   if (message.attachment) {
-    text = message.attachment.payload.text;
+    if (message.attachment.payload.text) {
+      text = message.attachment.payload.text;
+    } else {
+
+    }
   } else {
     text = message.text;
   }
