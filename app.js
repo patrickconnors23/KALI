@@ -932,10 +932,8 @@ function callSendAPI(messageData) {
   var text = ""
   if (message.attachment) {
     text = message.attachment.payload.text;
-    console.log("Attachment::",message.attachment.payload);
   } else {
     text = message.text;
-    console.log("just text::",message.text);
   }
   console.log("MESSAGE_TEXT::",text);
   request({
@@ -959,10 +957,14 @@ function callSendAPI(messageData) {
                 console.log("Create",error);
               }else{
                 console.log("Created",response);
+                response.lastMessage = text;
+                response.save();
               }
             });
           }else{
             console.log("Found");
+            user.lastMessage = text;
+            user.save();
           }
         }
       });
