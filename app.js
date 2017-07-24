@@ -677,6 +677,22 @@ function registrationLinkProcess(formattedText,senderID) {
     sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
   }
 }
+function moreActionsProcess(formattedText,senderID) {
+  switch (formattedText) {
+    case 'early':
+      earlyVotingInfoButton(senderID,"Ohio");
+      break;
+    case 'poll':
+
+      break;
+    case 'absentee':
+
+      break;
+    default:
+
+  }
+
+}
 
 /*
  * Message Event
@@ -775,6 +791,27 @@ function processText(senderID,messageText,lastMessage) {
   }
 }
 
+function earlyVotingInfoButton(senderID,state) {
+  var messageData = {
+    recipient: {
+      id: senderID
+    },
+    message: {
+      text: {"Here's what I found for early voting in "+state},
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "Early Voting in "+state,
+            item_url: "https://register2.rockthevote.com/registrants/new/OH/",
+          }]
+        }
+      }
+    }
+  };
+  callSendAPI(messageData);
+}
 function stateInfoButton(senderID,state) {
   var messageData = {
     recipient: {
@@ -787,7 +824,6 @@ function stateInfoButton(senderID,state) {
           template_type: "generic",
           elements: [{
             title: "Register in "+state,
-            subtitle: "Next-generation virtual reality",
             item_url: "https://register2.rockthevote.com/registrants/new/OH/",
             // image_url: SERVER_URL + "/assets/rift.png",
             buttons: [{
@@ -837,6 +873,15 @@ function receivedPostback(event) {
       break;
     case 'PERMISSION_DENIED':
       privacyConfirmationProcess('no',senderID);
+      break;
+    case "FIND_POLL":
+      moreActionsProcess('poll',senderID);
+      break;
+    case "FIND_EARLY_VOTING":
+      moreActionsProcess('early',senderID);
+      break;
+    case "FIND_ABSENTEE_BALLOT":
+      moreActionsProcess('absentee',senderID);
       break;
     default:
       var buttons = [{
