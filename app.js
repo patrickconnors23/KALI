@@ -68,14 +68,6 @@ app.get('/webhook', function(req, res) {
   }
 });
 
-
-/*
- * All callbacks for Messenger are POST-ed. They will be sent to the same
- * webhook. Be sure to subscribe your app to your page to receive callbacks
- * for your page.
- * https://developers.facebook.com/docs/messenger-platform/product-overview/setup#subscribe_app
- *
- */
 app.post('/webhook', function (req, res) {
   var data = req.body;
 
@@ -121,11 +113,6 @@ app.post('/webhook', function (req, res) {
   }
 });
 
-/*
- * This path is used for account linking. The account linking call-to-action
- * (sendAccountLinking) is pointed to this URL.
- *
- */
 app.get('/authorize', function(req, res) {
   var accountLinkingToken = req.query.account_linking_token;
   var redirectURI = req.query.redirect_uri;
@@ -569,6 +556,7 @@ function sendAccountLinking(recipientId) {
   callSendAPI(messageData);
 }
 
+//LANGUAGE PROCESSING METHODS
 function isRegisteredProcess(formattedText,senderID) {
   switch (formattedText) {
     case 'yes':
@@ -613,7 +601,6 @@ function isRegisteredProcess(formattedText,senderID) {
       break;
   }
 }
-
 function stateSelectorProcess(formattedText,senderID) {
   switch (formattedText) {
     case 'oh':
@@ -625,6 +612,51 @@ function stateSelectorProcess(formattedText,senderID) {
     default:
       sendTextMessage(senderID, "Sorry, we currently only have support for Ohio.");
     }
+}
+function privacyConfirmationProcess(formattedText,senderID) {
+  switch (formattedText) {
+    case 'yes':
+      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      break;
+    case 'no':
+      var text = "Head back to the main menu?";
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "RESTART"
+      }]
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    default:
+      sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
+      break;
+  }
+}
+function privacyDenialProcess(formattedText,senderID) {
+  sendTextMessage(senderID, "Still working on this part.")
+}
+function registrationLinkProcess(formattedText,senderID) {
+  if (formattedText.includes("register") || formattedText.includes("already")) {
+    var text = ("You better be... How else can I help you?");
+    var buttons = [{
+      type: "postback",
+      title: "Find Poll Locations",
+      payload: "FIND_POLL"
+    },
+    {
+      type: "postback",
+      title: "Early Voting",
+      payload: "FIND_EARLY_VOTING"
+    },
+    {
+      type: "postback",
+      title: "Absentee Ballots",
+      payload: "FIND_ABSENTEE_BALLOT"
+    }];
+    sendButtonMessage(senderID,buttons,text);
+  } else {
+    sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
+  }
 }
 
 /*
@@ -697,38 +729,28 @@ function processText(senderID,messageText,lastMessage) {
   const formattedText = messageText.toLowerCase();
   switch (lastMessage) {
     case 'What state are you from? Type your state or postal code.':
-      console.log("Caught a message");
       stateSelectorProcess(formattedText,senderID);
       break;
     case 'Sorry, I didn\'t understand that.':
       console.log("Caught a message");
       break;
     case 'Register in Ohio':
-      console.log("Caught a message");
+      registrationLinkProcess(formattedText,senderID);
       break;
     case 'You better be... How else can I help you?':
       console.log("Caught a message");
       break;
     case 'Let\'s get you registered! First, take a second to check out our privacy policy {link}. We don\'t share your info or data with anyone. Ready to get started?':
-      console.log("Caught a message");
-      break;
-    case "What state are you from? Type your state or postal code.":
-      console.log("Caught a message");
+      privacyConfirmationProcess(formattedText,senderID);
       break;
     case "Hi, I\'m DataGenomix\'s vote bot. Are you registered to vote?":
       isRegisteredProcess(formattedText,senderID);
       break;
     case "Head back to the main menu?":
-      console.log("Caught a message");
+      privacyDenialProcess(formattedText,senderID);
       break;
     default:
-      switch (messageText) {
-        case 'oh' || 'ohio' || 'OH' || 'Ohio':
-          stateInfoButton(senderID, "Ohio");
-          break;
-        default:
-          sendTextMessage(senderID, "Sorry, I didn't understand that.");
-        }
+      sendTextMessage(senderID, "Sorry, I didn't understand that.");
       break;
 
   }
