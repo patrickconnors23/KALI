@@ -569,6 +569,64 @@ function sendAccountLinking(recipientId) {
   callSendAPI(messageData);
 }
 
+function isRegisteredProcess(formattedText,senderID) {
+  switch (formattedText) {
+    case 'yes':
+      var text = ("You better be... How else can I help you?");
+      var buttons = [{
+        type: "postback",
+        title: "Find Poll Locations",
+        payload: "FIND_POLL"
+      },
+      {
+        type: "postback",
+        title: "Early Voting",
+        payload: "FIND_EARLY_VOTING"
+      },
+      {
+        type: "postback",
+        title: "Absentee Ballots",
+        payload: "FIND_ABSENTEE_BALLOT"
+      }];
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    case 'no':
+      var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
+      var buttons = [{
+        type: "postback",
+        title: "Yes",
+        payload: "PERMISSION_TO_HELP"
+      },
+      {
+        type: "postback",
+        title: "No",
+        payload: "PERMISSION_DENIED"
+      }]
+      sendButtonMessage(senderID,buttons,text);
+      break;
+    default:
+      if (formattedText.includes("know") || formattedText.includes("sure")){
+        sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      } else {
+        sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
+      }
+      break;
+  }
+}
+
+function stateSelectorProcess(formattedText,senderID) {
+  switch (formattedText) {
+    case 'oh':
+      stateInfoButton(senderID, "Ohio");
+      break;
+    case 'ohio':
+      stateInfoButton(senderID, "Ohio");
+      break;
+    default:
+      sendTextMessage(senderID, "Sorry, we currently only have support for Ohio.");
+    }
+}
+
 /*
  * Message Event
  *
@@ -640,16 +698,7 @@ function processText(senderID,messageText,lastMessage) {
   switch (lastMessage) {
     case 'What state are you from? Type your state or postal code.':
       console.log("Caught a message");
-      switch (formattedText) {
-        case 'oh':
-          stateInfoButton(senderID, "Ohio");
-          break;
-        case 'ohio':
-          stateInfoButton(senderID, "Ohio");
-          break;
-        default:
-          sendTextMessage(senderID, "Sorry, we currently only have support for Ohio.");
-        }
+      stateSelectorProcess(formattedText,senderID);
       break;
     case 'Sorry, I didn\'t understand that.':
       console.log("Caught a message");
@@ -667,48 +716,7 @@ function processText(senderID,messageText,lastMessage) {
       console.log("Caught a message");
       break;
     case "Hi, I\'m DataGenomix\'s vote bot. Are you registered to vote?":
-      switch (formattedText) {
-        case 'yes':
-          var text = ("You better be... How else can I help you?");
-          var buttons = [{
-            type: "postback",
-            title: "Find Poll Locations",
-            payload: "FIND_POLL"
-          },
-          {
-            type: "postback",
-            title: "Early Voting",
-            payload: "FIND_EARLY_VOTING"
-          },
-          {
-            type: "postback",
-            title: "Absentee Ballots",
-            payload: "FIND_ABSENTEE_BALLOT"
-          }];
-          sendButtonMessage(senderID,buttons,text);
-          break;
-        case 'no':
-          var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
-          var buttons = [{
-            type: "postback",
-            title: "Yes",
-            payload: "PERMISSION_TO_HELP"
-          },
-          {
-            type: "postback",
-            title: "No",
-            payload: "PERMISSION_DENIED"
-          }]
-          sendButtonMessage(senderID,buttons,text);
-          break;
-        default:
-          if (formattedText.includes("know") || formattedText.includes("sure")){
-            sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
-          } else {
-            sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
-          }
-          break;
-      }
+      isRegisteredProcess(formattedText,senderID);
       break;
     case "Head back to the main menu?":
       console.log("Caught a message");
