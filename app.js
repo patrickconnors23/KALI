@@ -705,7 +705,7 @@ function processText(senderID,messageText,lastMessage) {
           if (formattedText.includes("know") || formattedText.includes("sure") ||){
             sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
           } else {
-            sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message");
+            sendTextMessage(senderID,"Sorry, I didn't get that, try clicking one of the buttons below the last message.");
           }
 
       }
