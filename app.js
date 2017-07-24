@@ -643,14 +643,23 @@ function processText(senderID,messageText,lastMessage) {
       break;
     case 'Sorry, I didn\'t understand that.':
       sendTextMessage(senderID,"J asked about your state");
+    case 'You better be... How else can I help you?':
+      console.log("Caught a message");
+      break;
+    case 'Let\'s get you registered! First, take a second to check out our privacy policy {link}. We don\'t share your info or data with anyone. Ready to get started?':
+      console.log("Caught a message");
+      break;
+    case "What state are you from? Type your state or postal code.":
+      console.log("Caught a message");
+      break;
     default:
-    switch (messageText) {
-      case 'oh' || 'ohio' || 'OH' || 'Ohio':
-        stateInfoButton(senderID, "Ohio");
-        break;
-      default:
-        sendTextMessage(senderID, "Sorry, I didn't understand that.");
-      }
+      switch (messageText) {
+        case 'oh' || 'ohio' || 'OH' || 'Ohio':
+          stateInfoButton(senderID, "Ohio");
+          break;
+        default:
+          sendTextMessage(senderID, "Sorry, I didn't understand that.");
+        }
       break;
 
   }
