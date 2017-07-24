@@ -619,8 +619,6 @@ function receivedMessage(event) {
 
   if (messageText) {
     processTextMessage(senderID,messageText);
-
-    }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
