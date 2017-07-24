@@ -648,10 +648,13 @@ function processText(senderID,messageText,lastMessage) {
           stateInfoButton(senderID, "Ohio");
           break;
         default:
-          sendTextMessage(senderID, "Sorry, I didn't understand that.");
+          sendTextMessage(senderID, "Sorry, we currently only have support for Ohio.");
         }
       break;
     case 'Sorry, I didn\'t understand that.':
+      console.log("Caught a message");
+      break;
+    case 'Register in Ohio':
       console.log("Caught a message");
       break;
     case 'You better be... How else can I help you?':
@@ -664,7 +667,43 @@ function processText(senderID,messageText,lastMessage) {
       console.log("Caught a message");
       break;
     case "Hi, I\'m DataGenomix\'s vote bot. Are you registered to vote?":
-      console.log("Caught a message");
+      switch (formattedText) {
+        case 'yes':
+          var text = ("You better be... How else can I help you?");
+          var buttons = [{
+            type: "postback",
+            title: "Find Poll Locations",
+            payload: "FIND_POLL"
+          },
+          {
+            type: "postback",
+            title: "Early Voting",
+            payload: "FIND_EARLY_VOTING"
+          },
+          {
+            type: "postback",
+            title: "Absentee Ballots",
+            payload: "FIND_ABSENTEE_BALLOT"
+          }];
+          sendButtonMessage(senderID,buttons,text);
+          break;
+        case 'no':
+          var text = ("Let's get you registered! First, take a second to check out our privacy policy {link}. We don't share your info or data with anyone. Ready to get started?");
+          var buttons = [{
+            type: "postback",
+            title: "Yes",
+            payload: "PERMISSION_TO_HELP"
+          },
+          {
+            type: "postback",
+            title: "No",
+            payload: "PERMISSION_DENIED"
+          }]
+          sendButtonMessage(senderID,buttons,text);
+          break;
+        default:
+
+      }
       break;
     case "Head back to the main menu?":
       console.log("Caught a message");
@@ -816,8 +855,7 @@ function callSendAPI(messageData) {
     if (message.attachment.payload.text) {
       text = message.attachment.payload.text;
     } else {
-      console.log("NOTEXT",message.attachment.payload.elements[0].title);
-      text = "no text";
+      text = message.attachment.payload.elements[0].title;
     }
   } else {
     text = message.text;
