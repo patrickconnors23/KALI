@@ -557,6 +557,25 @@ function sendAccountLinking(recipientId) {
 }
 
 //LANGUAGE PROCESSING METHODS
+function getStartedProcess(formattedText,senderID) {
+  var text = "Hi, I'm DataGenomix's vote bot. Are you registered to vote?";
+  var buttons = [{
+    type: "postback",
+    title: "Yes",
+    payload: "IS_REGISTERED"
+  },
+  {
+    type: "postback",
+    title: "No",
+    payload: "NOT_REGISTERED"
+  },
+  {
+    type: "postback",
+    title: "I don't know",
+    payload: "UNSURE_IF_REGISTERED"
+  }];
+  sendButtonMessage(senderID,buttons,text);
+}
 function isRegisteredProcess(formattedText,senderID) {
   switch (formattedText) {
     case 'yes':
@@ -802,23 +821,7 @@ function receivedPostback(event) {
 
   switch (payload) {
     case 'GET_STARTED':
-      var text = "Hi, I'm DataGenomix's vote bot. Are you registered to vote?";
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "IS_REGISTERED"
-      },
-      {
-        type: "postback",
-        title: "No",
-        payload: "NOT_REGISTERED"
-      },
-      {
-        type: "postback",
-        title: "I don't know",
-        payload: "UNSURE_IF_REGISTERED"
-      }]
-      sendButtonMessage(senderID,buttons,text);
+      getStartedProcess("",senderID)
       break;
     case 'IS_REGISTERED':
       isRegisteredProcess("yes",senderID);
@@ -830,16 +833,10 @@ function receivedPostback(event) {
       isRegisteredProcess("know",senderID);
       break;
     case 'PERMISSION_TO_HELP':
-      sendTextMessage(senderID,"What state are you from? Type your state or postal code.");
+      privacyConfirmationProcess('yes',senderID);
       break;
     case 'PERMISSION_DENIED':
-      var text = "Head back to the main menu?";
-      var buttons = [{
-        type: "postback",
-        title: "Yes",
-        payload: "RESTART"
-      }]
-      sendButtonMessage(senderID,buttons,text);
+      privacyConfirmationProcess('no',senderID);
       break;
     default:
       var buttons = [{
