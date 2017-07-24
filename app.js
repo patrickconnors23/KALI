@@ -644,72 +644,16 @@ function processText(senderID,messageText,lastMessage) {
     case 'Sorry, I didn\'t understand that.':
       sendTextMessage(senderID,"J asked about your state");
     default:
-      sendTextMessage(senderID,"Couldn't figure out what last message was");
+    switch (messageText) {
+      case 'oh' || 'ohio' || 'OH' || 'Ohio':
+        stateInfoButton(senderID, "Ohio");
+        break;
+      default:
+        sendTextMessage(senderID, "Sorry, I didn't understand that.");
+      }
       break;
 
   }
-  switch (messageText) {
-    case 'Get Started':
-      sendButtonMessage(senderID);
-      break;
-    case 'image':
-      sendImageMessage(senderID);
-      break;
-
-    case 'gif':
-      sendGifMessage(senderID);
-      break;
-
-    case 'audio':
-      sendAudioMessage(senderID);
-      break;
-
-    case 'video':
-      sendVideoMessage(senderID);
-      break;
-
-    case 'file':
-      sendFileMessage(senderID);
-      break;
-
-    case 'button':
-      sendButtonMessage(senderID);
-      break;
-
-    case 'generic':
-      sendGenericMessage(senderID);
-      break;
-
-    case 'receipt':
-      sendReceiptMessage(senderID);
-      break;
-
-    case 'quick reply':
-      sendQuickReply(senderID);
-      break;
-
-    case 'read receipt':
-      sendReadReceipt(senderID);
-      break;
-
-    case 'typing on':
-      sendTypingOn(senderID);
-      break;
-
-    case 'typing off':
-      sendTypingOff(senderID);
-      break;
-
-    case 'account linking':
-      sendAccountLinking(senderID);
-      break;
-    case 'oh' || 'ohio' || 'OH' || 'Ohio':
-      stateInfoButton(senderID, "Ohio");
-      break;
-
-    default:
-      sendTextMessage(senderID, "Sorry, I didn't understand that.");
-    }
 }
 
 function stateInfoButton(senderID,state) {
