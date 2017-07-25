@@ -806,6 +806,9 @@ function processText(senderID,messageText,lastMessage) {
     case "Early Voting in Ohio":
       earlyVotingProcess(formattedText,senderID);
       break;
+    case 'Here\'s what I found for early voting in Ohio':
+      earlyVotingProcess(formattedText,senderID);
+      break;
     default:
       sendTextMessage(senderID, "Sorry, I didn't understand that.");
       break;
