@@ -694,6 +694,24 @@ function moreActionsProcess(formattedText,senderID) {
   }
 
 }
+function earlyVotingProcess(formattedText,senderID) {
+  var text = ("Here's some other stuff I can help you with:");
+  var buttons = [{
+    type: "postback",
+    title: "Find Poll Locations",
+    payload: "FIND_POLL"
+  },
+  {
+    type: "postback",
+    title: "Early Voting",
+    payload: "FIND_EARLY_VOTING"
+  },
+  {
+    type: "postback",
+    title: "Absentee Ballots",
+    payload: "FIND_ABSENTEE_BALLOT"
+  }];
+}
 
 /*
  * Message Event
@@ -784,6 +802,9 @@ function processText(senderID,messageText,lastMessage) {
       break;
     case "Head back to the main menu?":
       privacyDenialProcess(formattedText,senderID);
+      break;
+    case "Early Voting in Ohio":
+      earlyVotingProcess(formattedText,senderID);
       break;
     default:
       sendTextMessage(senderID, "Sorry, I didn't understand that.");
