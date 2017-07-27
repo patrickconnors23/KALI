@@ -792,7 +792,7 @@ function processText(senderID,messageText,lastMessage) {
       registrationLinkProcess(formattedText,senderID);
       break;
     case 'You better be... How else can I help you?':
-      console.log("Caught a message");
+      moreActionsProcess(formattedText,senderID);
       break;
     case 'Let\'s get you registered! First, take a second to check out our privacy policy {link}. We don\'t share your info or data with anyone. Ready to get started?':
       privacyConfirmationProcess(formattedText,senderID);
