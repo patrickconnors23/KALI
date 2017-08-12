@@ -1,6 +1,6 @@
 {
-    "appSecret": "2ee176ce6f478a6833f9855ef55ac39b",
-    "pageAccessToken": "EAAD5AoX6ZAAkBALfK92DOil9fefxEfQHPMyE6OTDxxFaIloB8BN49zYZCKlcDZABzByL6IgDNpLEURJGwMYZCG7XljJ5fafUIdzP86hysyeTXG9Syqfo3of5XKIsfEfm0WZConxHSnJje9T2ZAXTOVrzMEvOtGiNMpfNbFrF8W7tisxR91Ofpk",
+    "appSecret": "287cf91353ddcc2f7bd0be7540ad53de",
+    "pageAccessToken": "EAABkBQRZBqQ4BAPZA8jSpCa2FPSB7E5a6ZB2GiKUyUBSEIZBMjEKqHiIPJgpt0zXwgXAiGSXFrGT7IAA1rEJd7MIE54ouaXbHJsUvrWK9fyGZCF3aN8ycvydVUG5GS7R4Sz5WtluWQhAXAHgc7jxCZAG62qAkGgttuC90iFqUqaN3ysmvmqAWN",
     "validationToken": "asdfsadfsdafwfacxwefd",
-    "serverURL": "https://serene-dawn-27408.herokuapp.com/"
+    "serverURL": "https://1378278f.ngrok.io"
 }

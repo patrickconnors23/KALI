@@ -11,9 +11,6 @@ var userSchema = mongoose.Schema({
   },
   lastMessage:{
     type:String,
-  },
-  state: {
-    type:String,
   }
 });
 //
