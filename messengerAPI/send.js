@@ -112,7 +112,7 @@ var self = {
     self.callSendAPI(messageData);
   },
 
-  sendTextMessage: (recipientId, messageText) => {
+  sendTextMessage: (recipientId, messageText, lastMessageID) => {
     var messageData = {
       recipient: {
         id: recipientId
@@ -123,10 +123,10 @@ var self = {
       }
     };
 
-    self.callSendAPI(messageData);
+    self.callSendAPI(messageData, lastMessageID);
   },
 
-  sendButtonMessage: (recipientId,buttons,text) => {
+  sendButtonMessage: (recipientId,buttons,text,lastMessageID) => {
     var messageData = {
       recipient: {
         id: recipientId
@@ -143,7 +143,7 @@ var self = {
       }
     };
 
-    self.callSendAPI(messageData);
+    self.callSendAPI(messageData,lastMessageID);
   },
 
   sendGenericMessage: (recipientId) => {
@@ -255,34 +255,18 @@ var self = {
     self.callSendAPI(messageData);
   },
 
-  sendQuickReply: (recipientId) => {
+  sendQuickReply: (recipientId,quickReplies,text,lastMessageID) => {
     var messageData = {
       recipient: {
         id: recipientId
       },
       message: {
-        text: "What's your favorite movie genre?",
-        quick_replies: [
-          {
-            "content_type":"text",
-            "title":"Action",
-            "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
-          },
-          {
-            "content_type":"text",
-            "title":"Comedy",
-            "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
-          },
-          {
-            "content_type":"text",
-            "title":"Drama",
-            "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
-          }
-        ]
+        text: text,
+        quick_replies: quickReplies
       }
     };
 
-    self.allSendAPI(messageData);
+    self.callSendAPI(messageData,lastMessageID);
   },
 
   sendReadReceipt: (recipientId) => {
@@ -347,7 +331,7 @@ var self = {
     self.callSendAPI(messageData);
   },
 
-  callSendAPI: (messageData) => {
+  callSendAPI: (messageData,lastMessageID) => {
     const message = messageData.message;
     var text = ""
     if (message.attachment) {
@@ -373,29 +357,51 @@ var self = {
           if(error){
             console.log(error);
           }else{
-            console.log("User",user);
+            // console.log("User",user);
+            console.log(messageData.recipient.id);
             if(!user){
-              User.addUser({"fbID":recipientId,"lastMessage":"[]"},(error,response)=>{
-                if(error){
-                  console.log("Create",error);
-                }else{
-                  response.lastMessage = text;
-                  response.save();
-                }
-              });
+              request({
+                uri: 'https://graph.facebook.com/v2.6/'+
+                messageData.recipient.id+
+                '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token='+
+                PAGE_ACCESS_TOKEN,
+                method: 'GET',
+                json: messageData
+
+              }, (err,res,bodyUser) =>{
+                console.log("RESPONSE",bodyUser);
+                // first_name,last_name,timezone,profile_pic
+                User.addUser(
+                {
+                  fbID:recipientId,
+                  lastMessage:"[]",
+                  firstName:bodyUser.first_name,
+                  lastName:bodyUser.last_name,
+                  timeZone:bodyUser.timezone,
+                  profilePic:bodyUser.profile_pic
+                },(error,response)=>{
+                  if(error){
+                    console.log("Create",error);
+                  }else{
+                    response.lastMessage = text;
+                    response.save();
+                  }
+                });
+              })
+
             }else{
-              user.lastMessage = text;
+              user.lastMessage = lastMessageID;
               user.save();
             }
           }
         });
 
         if (messageId) {
-          console.log("Successfully sent message with id %s to recipient %s",
-            messageId, recipientId);
+          // console.log("Successfully sent message with id %s to recipient %s",
+            // messageId, recipientId);
         } else {
-        console.log("Successfully called Send API for recipient %s",
-          recipientId);
+        // console.log("Successfully called Send API for recipient %s",
+          // recipientId);
         }
       } else {
         console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);

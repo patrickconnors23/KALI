@@ -8,6 +8,7 @@ const
 
 var processAPI = require('./processinput.js');
 var sendAPI = require('./send.js');
+var messageIDs = require('./messageIDs.js');
 
 const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ?
   process.env.MESSENGER_APP_SECRET :
@@ -116,6 +117,7 @@ var self = {
   },
 
   receivedMessage: (event) => {
+    console.log("EVENT",event);
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
     var timeOfMessage = event.timestamp;
@@ -135,24 +137,40 @@ var self = {
     var messageAttachments = message.attachments;
     var quickReply = message.quick_reply;
 
-    if (isEcho) {
-      // Just logging message echoes to console
-      console.log("Received echo for message %s and app %d with metadata %s",
-        messageId, appId, metadata);
-      return;
-    } else if (quickReply) {
+    if (quickReply) {
       var quickReplyPayload = quickReply.payload;
-      console.log("Quick reply for message %s with payload %s",
-        messageId, quickReplyPayload);
+      console.log("QUICK",quickReply.payload);
 
-      sendAPI.sendTextMessage(senderID, "Quick reply tapped");
+      self.processQuickReply(senderID,quickReply.payload);
       return;
     }
 
-    if (messageText) {
+    else if (messageText) {
       self.processTextMessage(senderID,messageText);
     } else if (messageAttachments) {
       sendAPI.sendTextMessage(senderID, "Message with attachment received");
+    }
+  },
+
+  processQuickReply: (senderID,quickReply) => {
+    var formattedReply = quickReply.split(':');
+    switch (formattedReply[0]) {
+      case "YES_START":
+        processAPI.companyQueryProcess(senderID);
+        break;
+      case "NO_START":
+
+        break;
+      case "CAN_WORK":
+        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        break;
+      case "CAN_NOT_WORK":
+        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        break;
+      case "CANCEL_SHIFT_ID":
+        processAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
+      default:
+
     }
   },
 
@@ -161,7 +179,7 @@ var self = {
       if(error){
         console.log(error);
       }else{
-        console.log("USER",user);
+        // console.log("USER",user);
         const lastMessage = user.lastMessage;
         self.processText(senderID,messageText,lastMessage);
       }
@@ -170,65 +188,20 @@ var self = {
 
   processText: (senderID,messageText,lastMessage) => {
     const formattedText = messageText.toLowerCase();
+    // console.log("LAST",lastMessage);
     switch (lastMessage) {
-      case 'What state are you from? Type your state or postal code.':
-        processAPI.stateSelectorProcess(formattedText,senderID);
+      case "ASK_IF_USER_AVAILABLE_TO_WORK":
+        processAPI.canWorkProcesss(messageText,senderID);
         break;
-      case 'Sorry, I didn\'t understand that.':
-        console.log("Caught a message");
-        break;
-      case 'Register in Ohio':
-        processAPI.registrationLinkProcess(formattedText,senderID);
-        break;
-      case 'You better be... How else can I help you?':
-        processAPI.moreActionsProcess(formattedText,senderID);
-        break;
-      case 'Let\'s get you registered! First, take a second to check out our privacy policy {link}. We don\'t share your info or data with anyone. Ready to get started?':
-        processAPI.privacyConfirmationProcess(formattedText,senderID);
-        break;
-      case "Hi, I\'m DataGenomix\'s vote bot. Are you registered to vote?":
-        processAPI.isRegisteredProcess(formattedText,senderID);
-        break;
-      case "Head back to the main menu?":
-        processAPI.privacyDenialProcess(formattedText,senderID);
-        break;
-      case "Early Voting in Ohio":
-        processAPI.earlyVotingProcess(formattedText,senderID);
-        break;
-      case 'Here\'s what I found for early voting in Ohio':
-        processAPI.earlyVotingProcess(formattedText,senderID);
+      case messageIDs.QUERY_COMPANY:
+        processAPI.receiveCompanyCodeProcess(messageText,senderID);
         break;
       default:
-        sendAPI.sendTextMessage(senderID, "Sorry, I didn't understand that.");
+        sendAPI.sendTextMessage(senderID,
+          "Sorry, I didn't understand that.","CANT_UNDERSTAND");
         break;
 
     }
-  },
-
-  earlyVotingInfoButton: (senderID,state) => {
-    var messageData = {
-      recipient: {
-        id: senderID
-      },
-      message: {
-        attachment: {
-          type: "template",
-          payload: {
-            template_type: "generic",
-            elements: [{
-              title: "Early Voting in "+state,
-              item_url: "https://register2.rockthevote.com/registrants/new/OH/",
-              buttons: [{
-                type: "web_url",
-                url: "https://register2.rockthevote.com/registrants/new/OH/",
-                title: "Vote Early"
-              }]
-            }]
-          }
-        }
-      }
-    };
-    sendAPI.callSendAPI(messageData);
   },
 
   receivedPostback: (event) => {
@@ -245,32 +218,14 @@ var self = {
 
     switch (payload) {
       case 'GET_STARTED':
-        processAPI.getStartedProcess("",senderID)
+        console.log("Hit get started");
+        processAPI.getStartedProcess("",senderID);
         break;
-      case 'IS_REGISTERED':
-        processAPI.isRegisteredProcess("yes",senderID);
+      case 'VIEW_SHIFTS':
+        processAPI.viewShiftProcess(senderID);
         break;
-      case 'NOT_REGISTERED':
-        processAPI.isRegisteredProcess("no",senderID);
-        break;
-      case 'UNSURE_IF_REGISTERED':
-        processAPI.isRegisteredProcess("know",senderID);
-        break;
-      case 'PERMISSION_TO_HELP':
-        processAPI.privacyConfirmationProcess('yes',senderID);
-        break;
-      case 'PERMISSION_DENIED':
-        processAPI.privacyConfirmationProcess('no',senderID);
-        break;
-      case "FIND_POLL":
-        processAPI.moreActionsProcess('poll',senderID);
-        break;
-      case "FIND_EARLY_VOTING":
-        processAPI.moreActionsProcess('early',senderID);
-        break;
-      case "FIND_ABSENTEE_BALLOT":
-        processAPI.moreActionsProcess('absentee',senderID);
-        break;
+      case 'CANCEL_SHIFT':
+        processAPI.cancelShiftProcess(senderID);
       default:
         var buttons = [{
           type: "postback",
@@ -285,7 +240,7 @@ var self = {
     var greetingData = {
       setting_type: "greeting",
       greeting:{
-        text:"Hi, I'm Data Genomix's voter bot, let's get you registered to vote!"
+        text:"Hi, I'm a ShiftBot, I'll help you manage your work schedule."
       }
     };
     self.createGreetingApi(greetingData);

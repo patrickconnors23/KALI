@@ -9,6 +9,9 @@ const
   https = require('https'),
   request = require('request');
 
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session')
+
 require('dotenv').config();
 
 var app = express();
@@ -16,20 +19,26 @@ var authConfig = require('./config.js').get(process.env.NODE_ENV);
 var mAPI = require('./messengerAPI/controller.js');
 app.set('port', process.env.PORT || 7000);
 app.set('view engine', 'ejs');
+app.use(bodyParser());
 app.use(bodyParser.json({ verify: mAPI.verifyRequestSignature }));
 app.use(express.static('public'));
-console.log("hIT APP");
-
 
 var User = require('./models/user.js');
+app.use(cookieSession({
+  name: 'session',
+  keys: ["dsafdfdfs"],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+var passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
+var initPassport = require('./passport/init');
+initPassport(passport);
 
-var routes = require('./routes');
+var routes = require('./routes/index.js')(passport);
+var messengerRoutes = require('./routes/messengerRoutes.js')
 app.use('/', routes);
-/*
- * Be sure to setup your config values before running this code. You can
- * set them using environment variables or modifying the config file in /config.
- *
- */
+app.use('/messenger',messengerRoutes);
 
 // App Secret can be retrieved from the App Dashboard
 const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ?
@@ -56,26 +65,6 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
   console.error("Missing config values");
   process.exit(1);
 }
-
-/*
- * Use your own validation token. Check that the token used in the Webhook
- * setup is the same token used here.
- *
- */
-
-/*
- * Verify that the callback came from Facebook. Using the App Secret from
- * the App Dashboard, we can verify the signature that is sent with each
- * callback in the x-hub-signature field, located in the header.
- *
- * https://developers.facebook.com/docs/graph-api/webhooks#setup
- *
- */
-
-
-// Start server
-// Webhooks must be available via SSL with a certificate signed by a valid
-// certificate authority.
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
   mAPI.setGreetingText();

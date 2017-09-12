@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+      <title>ShiftBot</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <!-- <link rel="stylesheet" href="/style.css"> -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+      <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>Home</h1>
+
+      <% if (!hasCompany) {%>
+        <h3>Add Company</h3>
+        <form action="/createCompany" method="post">
+          <div class="form-group">
+            <label for="formGroupExampleInput">Company Name</label>
+            <input type="text" class="form-control" id="formGroupExampleInput" name="company" value="">
+          </div>
+          <div class="form-group">
+            <label for="formGroupExampleInput2">Secret Code</label>
+            <input type="text" class="form-control" id="formGroupExampleInput2" name="secret" value="" placeholder="short code that users can remember">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      <% } else {%>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-6">
+                <h2><%=company.name%></h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h4>Secret Code: <%=company.secretCode%></h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Active Shifts</h3>
+            <div>
+              <% for(var i=0; i<shifts.length; i++) {%>
+                <div>
+                  <h5><%= shifts[i].date %> from <%= shifts[i].startTime %> to <%= shifts[i].endTime %></h5>
+                  <p><%= shifts[i].employees.length %> / <%= shifts[i].employeeCount %></p>
+                  <% for(var j=0; j<shifts[i].employees.length; j++) {%>
+                    <p><%= shifts[i].employees[j].firstName %> <%= shifts[i].employees[j].lastName %></p>
+                    <!-- <p><%= shifts[i].employees[j]%> </p> -->
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h3>Employees</h3>
+            <div>
+              <% for(var i=0; i<employees.length; i++) {%>
+                <div>
+                  <!-- <img src=<%= employees[i].profilePic %> height="40" width="40"/> -->
+                  <h5><%= employees[i].firstName %> <%= employees[i].lastName %></h5>
+                </div>
+              <% } %>
+            </div>
+            <h3>Create Shift</h3>
+            <form action="/createShift" method="post">
+              <div class="form-group">
+                  <label for="formGroupExampleInput2">Start Time</label>
+                  <div class='input-group date' id='datetimepicker6'>
+                      <input type='text' class="form-control" name="bootDate" value="" placeholder="test"/>
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="formGroupExampleInput2">End Time</label>
+                  <div class='input-group date' id='datetimepicker7'>
+                      <input type='text' class="form-control" name="bootDate" value=""/>
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+              <div class="form-group">
+                <label for="formGroupExampleInput2"># of Workers</label>
+                <input type="text" class="form-control" id="formGroupExampleInput2" name="workersCount" value="" placeholder="">
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+
+      <% } %>
+
+    </div>
+    <div class="container">
+      <div class='col-md-5'>
+
+      </div>
+      <div class='col-md-5'>
+
+      </div>
+    </div>
+    <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker6').datetimepicker();
+            $('#datetimepicker7').datetimepicker({
+                useCurrent: false //Important! See issue #1075
+            });
+            $("#datetimepicker6").on("dp.change", function (e) {
+                $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+            });
+            $("#datetimepicker7").on("dp.change", function (e) {
+                var date2 = moment(e.date._d).add(1,'days');
+                $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    </script>
+  </body>
+</html>

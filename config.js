@@ -8,7 +8,7 @@ var config = {
     facebook: {
       'appID' : '1371205399658864',
       'appSecret' : '35a8343fbb53ec85807bfd9386f317b7',
-      'callbackUrl' : 'http://action.ohiocleanenergy.com/login/facebook/callback'
+      // 'callbackUrl' : 'http://action.ohiocleanenergy.com/login/facebook/callback'
     }
   },
   default: {
@@ -20,7 +20,7 @@ var config = {
     facebook: {
       'appID' : '109972713023758',
       'appSecret' : '287cf91353ddcc2f7bd0be7540ad53de',
-      'callbackUrl' : 'http://localhost:3000/login/facebook/callback'
+      'callbackUrl' : 'http://localhost:7000/login/facebook/callback'
     }
   }
 }
