@@ -22,11 +22,15 @@ var shiftSchema = mongoose.Schema({
   // employees who rejected shift offer
   rejectedEmployees: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 
+  //
   // number of employees needed for shift
   employeeCount:Number,
 
   // company associated with shift
-  company: { type: Schema.Types.ObjectId, ref: 'Company'}
+  company: { type: Schema.Types.ObjectId, ref: 'Company'},
+
+  // type of employee that is needed to fill this shift
+  role: String,
 });
 
 var Shift = module.exports = db.model('Shift',shiftSchema);

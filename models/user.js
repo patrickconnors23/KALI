@@ -10,6 +10,7 @@ var userSchema = mongoose.Schema({
   fbID:{
     type:String,
   },
+
   // first_name,last_name,timezone,profile_pic
   firstName:String,
   lastName:String,
@@ -18,6 +19,9 @@ var userSchema = mongoose.Schema({
   lastMessage:{
     type:String,
   },
+  email:String,
+
+  // facebook id only associated with manager who has logged into Kali via web interface
   fb: {
     id: String,
     access_token: String,
@@ -30,8 +34,16 @@ var userSchema = mongoose.Schema({
     pagePosts:Object,
     pageInfo:Object
   },
+  // tells us whether an employee has an active shift request
+  // we don't want to send multiple requests at once
   hasMessage: Boolean,
-  company: { type: Schema.Types.ObjectId, ref: 'Company' }
+
+  // company that user works for
+  company: { type: Schema.Types.ObjectId, ref: 'Company' },
+
+  // specifies the user's role within the company
+  // this determines which roles the employee can be assigned to
+  role: String,
 });
 //
 
@@ -52,4 +64,14 @@ module.exports.getUserByFBID = function (id,callback) {
 
 module.exports.addUser = function (user, callback) {
     User.create(user,callback);
+};
+
+module.exports.getUserByCompany = (companyID) => {
+  return User.find({company:companyID}).exec()
+    .then((employees) => {
+      return employees;
+    })
+    .catch((err) => {
+      return 'error occured';
+    });
 };

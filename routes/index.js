@@ -37,7 +37,6 @@ module.exports = function(passport){
   );
 
   router.get('/', async (req, res) => {
-    console.log(req.user);
 		res.render('index', {});
 	});
 
@@ -52,6 +51,7 @@ module.exports = function(passport){
 				shiftManagerAPI.checkForUpdate();
 				// if the user has a company
         if (userCompany!=null){
+					console.log(userCompany.roles[0]);
           hasCompany=true;
 					// find the company's shifts
           Shift.find({company:userCompany._id},async(error,shifts)=>{
@@ -77,6 +77,7 @@ module.exports = function(passport){
                         company:userCompany,
                         shifts:formattedShifts,
                         employees:employees,
+												roles:userCompany.roles
                       });
                     })
                   }
@@ -90,39 +91,98 @@ module.exports = function(passport){
                 company:userCompany,
                 shifts:[],
                 employees:[],
+								roles:userCompany.roles
               });
             }
 
           })
 				// if the user has no company
         } else {
-          res.render('home', {
-            hasCompany:hasCompany,
-            company:userCompany,
-          });
+					res.redirect('/personalInfo');
+        //   res.render('home', {
+        //     hasCompany:hasCompany,
+        //     company:userCompany,
+        //   });
         }
       }
     })
   });
 
-	// add company to user profile
-  router.post('/createCompany',async (req,res) => {
-    const data = req.body;
-    const newCompany = {name:data.company,secretCode:data.secret,admin:req.user._id};
-    Company.addCompany(newCompany,(error,response)=>{
-      if(error){
-        console.log(error);
-      } else {
-        res.render('thanks',{});
-      }
-    })
+	// renders the personal info page
+	router.get('/personalInfo',(req,res) => {
+		res.render('personalInfoForm',{});
+	});
+
+	// receives personal info and then renders company info form
+	// needs to save personal info
+	router.post('/personalInfo',(req,res) => {
+		const data = req.body;
+		var user = req.user;
+		user.email = req.body.email;
+		user.firstName = req.body.firstName;
+		user.lastName = req.body.lastName;
+		user.save();
+		res.redirect('/createCompany');
+	})
+
+	router.get('/createCompany', (req,res) => {
+		res.render('companyInfoForm',{});
+	})
+
+  router.post('/createCompany', (req,res) => {
+		const data = req.body;
+		const newCompany = {
+			name:data.company,
+			industry:data.industry,
+			admin:req.user._id,
+			estimatedEmployeeCount: data.employeeCount
+		};
+		Company.addCompany(newCompany,(error,response)=>{
+			if(error){
+				console.log(error);
+			} else {
+				res.redirect('/companyCode');
+			}
+		})
   });
+
+	router.get('/companyCode', (req,res) => {
+		res.render('secretCodeForm',{});
+	})
+
+	router.post('/companyCode',async (req,res) => {
+		const data = req.body;
+		Company.findOne({admin:req.user._id},(error,userCompany) => {
+			userCompany.secretCode = data.secretCode;
+			userCompany.roles.push("Any");
+			userCompany.save();
+			res.redirect('/companyRoles');
+		})
+	});
+
+	router.get('/companyRoles', (req,res) => {
+		res.render('companyRolesForm',{});
+	});
+
+	router.post('/companyRoles',async (req,res) => {
+		const data = req.body;
+		console.log(data);
+		Company.findOne({admin:req.user._id},(error,userCompany) => {
+			if (data.roles.constructor === Array) {
+				data.roles.forEach((role)=>{
+					userCompany.roles.push(role);
+				})
+			} else { userCompany.roles.push(data.roles);}
+			userCompany.save();
+			console.log(userCompany);
+			res.redirect('/home');
+		})
+	});
 
 	// creates a new shift
   router.post('/createShift',async(req,res) => {
     var hasCompany = false;
     const data = req.body;
-    console.log("BOOOODY",req.body);
     const user = req.user._id;
     shiftManagerAPI.createShift(user,data);
     res.render('thanks', {});

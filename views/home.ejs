@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
-      <title>ShiftBot</title>
+      <title>Kali</title>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <!-- <link rel="stylesheet" href="/style.css"> -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
@@ -95,6 +95,14 @@
               <div class="form-group">
                 <label for="formGroupExampleInput2"># of Workers</label>
                 <input type="text" class="form-control" id="formGroupExampleInput2" name="workersCount" value="" placeholder="">
+              </div>
+              <div class="form-group">
+                <label>Type of Worker Needed</label>
+                <select name="workerType">
+                  <% for(var i=0; i<roles.length; i++) {%>
+                    <option value="<%= roles[i]%>"><%= roles[i]%></option>
+                  <% } %>
+                </select>
               </div>
               <button type="submit" class="btn btn-primary">Submit</button>
             </form>

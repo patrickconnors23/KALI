@@ -81,11 +81,48 @@ var self = {
               sendAPI.sendTextMessage(senderID,
                 ("We've connected your account with "+company.name+"'s. Whenever they need you for a shift, you'll get a message here. You can view your messages and shifts via the bottom menu."),
                 messageIDs.COMPANY_CONFIRMED);
+              setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
+
             }
           });
         }
       }
     })
+  },
+
+  roleQueryProcess: (senderID) => {
+    var text = "What's your role within the company";
+    var quickReplies = [];
+    User.findOne({fbID:senderID},(error,user)=>{
+      Company.findOne({_id:user.company},(error,company)=>{
+        company.roles.forEach((role)=>{
+          var newQR = {
+            "content_type":"text",
+            "title":role,
+            "payload":"ROLE:"+role
+          };
+          quickReplies.push(newQR);
+        });
+        sendAPI.sendQuickReply(senderID,quickReplies,text,messageIDs.QUERY_ROLE);
+      })
+    })
+  },
+
+  // process the role which the user selected
+  receivedRoleProcess: (rolePrefix,role,senderID) => {
+    User.findOne({fbID:senderID},(error,user)=>{
+      Company.findOne({_id:user.company},(error,company)=>{
+        // text to send
+        const text = "Cool, we'll send you a notification whenever "+
+          company.name+" neeeds a "+role+"!";
+
+        sendAPI.sendTextMessage(senderID,text);
+
+        // save the user's selected role in the db
+        user.role = role;
+        user.save();
+      });
+    });
   },
 
   queryShiftProcess: (context,senderID) => {
@@ -108,6 +145,9 @@ var self = {
   },
 
   canWorkProcesss: (replyText,shiftID,senderID) => {
+    // save the fact that the user responded in the db
+    shiftManagerAPI.userRespondedToQuery(senderID);
+    // process what the input was
     switch (replyText) {
       case "CAN_WORK":
         shiftManagerAPI.shiftAccepted(shiftID,senderID);

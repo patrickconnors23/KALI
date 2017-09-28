@@ -8,13 +8,13 @@ var schedule = require('node-schedule');
 
 var self = {
   sendMessages: (company,shift)=>{
-    // console.log(shift);
-    console.log("Ripped a message send",company.name,shift);
+    console.log("Called send messages");
+    // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
 
     // get all users associated with the company
-    User.find({company:company._id},(error,employees)=>{
+    User.find({company:company._id},async(error,employees)=>{
       // total number of employees needed
       var shiftSpots = shift.employeeCount;
 
@@ -34,45 +34,138 @@ var self = {
       var employeesMessaged = messagedInit - deniedInit;
 
       // ordered list of employees
+      var orderedEmployees = await self.orderEmployees(employees,shift.role);
+      // console.log("REEEETURNING THESE EMPLOOOOYEEES",orderedEmployees);
+      // self.orderEmployees2(company._id);
+      var employees = await Company.getEmployees(company._id);
+      console.log("THIS MIGHT JUST WORK",employees);
+      // make sure we have at least one employee to message
+      if (orderedEmployees == []) {
+        console.log("Returned No Employees");
+      } else {
 
-      // iterate through list of employees and message them
-      employees.forEach((employee)=>{
-        console.log("EMPLOYEE");
-        if (shift.messagedEmployees != null && shift.messagedEmployees.length > 0) {
-          console.log("have employees");
-          var alreadyMessaged = false;
-          var counter = 0
-          // console.log("HIT not null");
-          shift.messagedEmployees.forEach((id)=>{
-            counter++;
-            if (id.toString() == employee._id) {
-              console.log("FOUND MESSAGED WORKER");
-              alreadyMessaged = true;
-            }
-            if (counter == shift.messagedEmployees.length) {
-              // console.log("RETURNING",alreadyMessaged);
-              if (!alreadyMessaged) {
-                // console.log("MESSAGING FROM HASMESSAGED");
-                if(employeesMessaged < shiftSpots){
-                  employeesMessaged++;
-                  shift.messagedEmployees.push(employee._id);
-                  shift.save();
-                  processAPI.queryShiftProcess(context,employee.fbID);
+        // iterate through list of employees and message them
+        orderedEmployees.forEach((employee)=>{
+          // check whether we've messaged anyone yet
+          if (shift.messagedEmployees != null && shift.messagedEmployees.length > 0) {
+            var alreadyMessaged = false;
+            var counter = 0;
+
+            // iterate through list of employees we've messaged
+            shift.messagedEmployees.forEach((id)=>{
+              counter++;
+
+              //check whether we've messaged this employee
+              if (id.toString() == employee._id) {
+                alreadyMessaged = true;
+              }
+              // if we are at the end of the list of messaged employees
+              if (counter == shift.messagedEmployees.length) {
+
+                // and we haven't already messaged this employee
+                if (!alreadyMessaged) {
+
+                  // if this employee doesn't have an active shift request
+                  if (!employee.hasMessage) {
+
+                    // and we haven't messaged too many people
+                    if(employeesMessaged < shiftSpots){
+                      employee.hasMessage = true;
+                      employee.save();
+                      employeesMessaged++;
+                      console.log(employee);
+                      shift.messagedEmployees.push(employee._id);
+                      shift.save();
+                      processAPI.queryShiftProcess(context,employee.fbID);
+                    }
+                  }
                 }
               }
+            })
+          // if we haven't messaged anyone yet
+          } else {
+            if(employeesMessaged < shiftSpots){
+              // if this employee doesn't have an active shift request
+              if (!employee.hasMessage) {
+                employee.hasMessage = true;
+                employee.save();
+                employeesMessaged++;
+                console.log(employee);
+                shift.messagedEmployees.push(employee._id);
+                shift.save();
+                processAPI.queryShiftProcess(context,employee.fbID);
+              }
             }
-          })
-
-        } else {
-          console.log("HIT NEW BRANCH",employeesMessaged,shiftSpots)
-          if(employeesMessaged < shiftSpots){
-            employeesMessaged++;
-            shift.messagedEmployees.push(employee._id);
-            shift.save();
-            processAPI.queryShiftProcess(context,employee.fbID);
           }
-        }
+        })
+      }
+    })
+  },
+
+  // sort employees by the number of shifts that they've picked up
+  // this makes sure we always pick the best employee for the job
+  // need to iterate on this algorithm
+  orderEmployees: (employees,role) => {
+    var employeeOrder = [];
+    // console.log(employees,role);
+    // iterate through the employees
+    employees.forEach((employee)=>{
+      // console.log("ITS NOT THIS FOREACH LOOP")
+      // find all the shifts that the employee has accepted vs denied
+      Shift.find({employees:employee._id},(error,shifts)=>{
+        Shift.find({rejectedEmployees:employee._id},(error,rejectedShifts)=>{
+
+          // add a point if they accepted the shift and take one if they denied
+          var shiftCounter = 0;
+          shifts.forEach((shift)=>{
+            shiftCounter++;
+          });
+          rejectedShifts.forEach((rejectedShift)=>{
+            shiftCounter--;
+          });
+
+          // if the employee has the necesarry job then add them to the order
+          if (employee.role == role || role == "Any") {
+            employeeOrder.push([shiftCounter,employee]);
+          }
+
+          // sort the employees by their score
+          if (employeeOrder.length == employees.length) {
+            var sortedEmployeeOrder = employeeOrder.sort((a,b)=>{
+              return a[0] - b[0];
+            })
+            // console.log(role=="Any",sortedEmployeeOrder,"TEEEEEEEEEST");
+            // return our sorted list
+            return sortedEmployeeOrder;
+          }
+        })
+      });
+    })
+
+    // if something goes wroing just return all da employees
+    return employees;
+  },
+
+  orderEmployees2: async(company) => {
+    var employees = await self.orderEmployees3(company);
+    console.log(employees,"PRRRROMMISSSES");
+  },
+
+  orderEmployees3: (company) => {
+    return User.find({company:company}).exec()
+      .then((employees) => {
+        console.log(employees,"PROMES IN DA LOOP");
+        return employees;
       })
+      .catch((err) => {
+        return 'error occured';
+      });
+  },
+
+  userRespondedToQuery: (messengerID) => {
+    User.findOne({fbID:messengerID},(error,user)=>{
+      user.hasMessage = false;
+      user.save();
     })
   },
 
@@ -102,19 +195,17 @@ var self = {
     })
   },
 
+  // check whether a user has been messaged
   hasMessaged: async(employeeID,messagedList) => {
-    console.log("HIT HAS MESSAGED");
     const formattedID = employeeID.toString();
     var alreadyMessaged = false;
     var counter = 0
     messagedList.forEach((id)=>{
       counter++;
       if (id.toString() == formattedID) {
-        console.log("FOUND MESSAGED WORKER");
         alreadyMessaged = true;
       }
       if (counter == messagedList.length) {
-        console.log("RETURNING",alreadyMessaged);
         return alreadyMessaged;
       }
     })
@@ -131,14 +222,14 @@ var self = {
         employeeCount:formData.workersCount,
         startTime:moment(startDate),
         endTime:moment(endDate),
-        company:company._id
+        company:company._id,
+        role:formData.workerType
       };
 
       Shift.create(newShift,(error,response)=>{
         if (error){
           console.log("error");
         } else {
-          console.log("should send");
           self.sendMessages(company,response);
           self.createWeeklyShift(newShift);
         }
@@ -161,12 +252,11 @@ var self = {
         startTime:newShiftStart,
         endTime:newShiftEnd,
         company:shift.company,
+        role:shift.role
       };
       Shift.create(newShift,(error,response)=>{
         if (error){
           console.log("error");
-        } else {
-          console.log("should send",response);
         }
       })
     }
@@ -177,24 +267,66 @@ var self = {
   // currently two weeks
   checkForUpdate: () => {
     Shift.find({},(error,shifts)=>{
+      // only want to deal with shifts that haven't happened yet
       var futureShifts = self.filterShifts(shifts);
       var currentDate = moment();
-      futureShifts.forEach((shift)=>{
+      // iterate through all future shifts
+      var sortedFutureShifts = futureShifts.sort((a,b) => {
+        return a.startTime - b.startTime;
+      });
+
+      var needUpdateArray = [];
+      var counter = 0;
+      sortedFutureShifts.forEach((shift)=>{
+        counter++;
         if (currentDate.diff(shift.startTime,'weeks') > -2) {
-          console.log("SHIFT",shift.company);
           Company.findOne({_id:shift.company},(error,company) => {
-            console.log("COMPANY",company)
-            self.sendMessages(company,shift);
+            needUpdateArray.push([company,shift]);
+            if(counter == sortedFutureShifts.length){
+              self.smartUpdateProcess(needUpdateArray);
+            }
           })
+        } else{
+          if(counter == sortedFutureShifts.length){
+            self.smartUpdateProcess(needUpdateArray);
+          }
         }
       })
     })
   },
 
+  smartUpdateProcess: (updateArray) => {
+    const companyMessageManager = (shiftObjectArray) => {
+      const timer = (shiftObject,index) => {
+            setTimeout(function () {
+                self.sendMessages(shiftObject[0],shiftObject[1]);
+            }, index*500);
+        }
+      shiftObjectArray.forEach((shiftObject,index)=>{
+        timer(shiftObject,index)
+      })
+    };
+    var sendObj = {};
+    // sort shifts by company
+    updateArray.forEach((shiftSend)=> {
+      var objectField = shiftSend[0]._id;
+      if(sendObj[objectField]) {
+        sendObj[objectField].push(shiftSend);
+      } else {
+        sendObj[objectField] = [shiftSend];
+      }
+    });
+
+    Object.entries(sendObj).forEach(([key, value]) => {
+        companyMessageManager(value);
+    });
+
+    console.log("shiftsssdfdafdssss",sendObj);
+  },
+
   // return future shifts for a user
   viewShifts: (messengerID) => {
     User.findOne({fbID:messengerID},(error,user) => {
-        console.log("USER",user);
       Shift.find({employees:user._id},async(error,shifts) => {
         if(shifts != null) {
           var message = "I found your upcoming shifts: \n\n";
@@ -231,7 +363,6 @@ var self = {
 
   cancelShiftOptions: (messengerID) => {
     User.findOne({fbID:messengerID},(error,user) => {
-        console.log("USER",user);
       Shift.find({employees:user._id},async(error,shifts) => {
         if(shifts != null) {
           var message = "Which shift would you like to cancel?";
@@ -241,7 +372,6 @@ var self = {
           if (futureShifts.length != 0) {
             // iterate through shifts
             futureShifts.forEach((shift)=>{
-              console.log("FUTURE",shift);
               var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
               quickReplies.push(
                 {
@@ -278,7 +408,6 @@ var self = {
           shift.save();
           self.sendMessages(company,shift);
           self.cancelShiftReminder(shiftID,messengerID);
-          console.log("MATCH",shift.employees,user._id,newEmployees);
         })
       })
     })
@@ -303,12 +432,9 @@ var self = {
   },
 
   scheduleReminder: (context,startTime,messengerID) => {
-    // const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
     var jobName = context.shiftID+'/'+messengerID;
     var date = moment(startTime);
-    console.log('init',date,date.toDate());
     var sendDate = date.subtract(2,'h');
-    console.log("sennnnndnddd",sendDate,sendDate.toDate());
     var formattedSendDate = new Date(
       sendDate.year(),
       sendDate.month(),
@@ -316,7 +442,6 @@ var self = {
       sendDate.hours(),
       sendDate.minutes()
     );
-    console.log("sseendfdd",formattedSendDate);
     var j = schedule.scheduleJob(jobName,formattedSendDate, function(){
       processAPI.shiftReminderProces(context,messengerID);
     });
@@ -327,7 +452,7 @@ var self = {
     var formattedStart = moment(startTime).format("h:mm a");
     var formattedEnd = moment(endTime).format("h:mm a");
     return {date:formattedDate,startTime:formattedStart,endTime:formattedEnd};
-  }
+  },
 }
 
 module.exports = self;

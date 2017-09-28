@@ -169,6 +169,9 @@ var self = {
         break;
       case "CANCEL_SHIFT_ID":
         processAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
+        break;
+      case "ROLE":
+        processAPI.receivedRoleProcess(formattedReply[0],formattedReply[1],senderID);
       default:
 
     }
