@@ -101,8 +101,8 @@ var self = {
     var watermark = event.read.watermark;
     var sequenceNumber = event.read.seq;
 
-    console.log("Received message read event for watermark %d and sequence " +
-      "number %d", watermark, sequenceNumber);
+    // console.log("Received message read event for watermark %d and sequence " +
+    //   "number %d", watermark, sequenceNumber);
   },
 
   receivedAccountLink: (event) => {
@@ -112,20 +112,20 @@ var self = {
     var status = event.account_linking.status;
     var authCode = event.account_linking.authorization_code;
 
-    console.log("Received account link event with for user %d with status %s " +
-      "and auth code %s ", senderID, status, authCode);
+    // console.log("Received account link event with for user %d with status %s " +
+    //   "and auth code %s ", senderID, status, authCode);
   },
 
   receivedMessage: (event) => {
-    console.log("EVENT",event);
+    // console.log("EVENT",event);
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
     var timeOfMessage = event.timestamp;
     var message = event.message;
 
-    console.log("Received message for user %d and page %d at %d with message:",
-      senderID, recipientID, timeOfMessage);
-    console.log(JSON.stringify(message));
+    // console.log("Received message for user %d and page %d at %d with message:",
+    //   senderID, recipientID, timeOfMessage);
+    // console.log(JSON.stringify(message));
 
     var isEcho = message.is_echo;
     var messageId = message.mid;

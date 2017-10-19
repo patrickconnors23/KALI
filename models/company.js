@@ -40,8 +40,14 @@ module.exports.getCompanies = function (callback, limit) {
     Company.find(callback).limit(limit);
 };
 
-module.exports.getCompanyById = function (id,callback) {
-  Company.findById(id, callback);
+module.exports.getCompanyById = function (id) {
+  return Company.find({_id:id}).exec()
+    .then((company) => {
+      return company;
+    })
+    .catch((err) => {
+      return ("THIS ERROR "+err);
+    });
 };
 
 module.exports.getCompanyByAdmin = function async(id,callback) {
@@ -53,40 +59,65 @@ module.exports.addCompany = function (company, callback) {
     Company.create(company,callback);
 };
 
+// return a company's employees with their shifts
 module.exports.getEmployees = (companyID) => {
 
+  // return shift given employee
   function shift(employeeID) {
     return Shift.find({employees:employeeID}).exec()
       .then((shifts) => {
-        console.log(shifts,employeeID,"IN QUERYYYYYY")
         return shifts;
       })
       .catch((err) => {
-        return 'error occured';
+        return ("error occured "+err);
       });
   };
 
+  function rejectedShifts(employeeID){
+    return Shift.find({rejectedEmployees:employeeID}).exec()
+      .then((shifts) => {
+        return shifts;
+      })
+      .catch((err) => {
+        return ("THIS ERROR "+err);
+      });
+  };
+
+  // loop through employees and add their shifts
   async function loop(employees) {
       var holder = [];
       for (let i = 0; i < employees.length; i++) {
           // await new Promise(resolve => setTimeout(resolve, 1000));
-          const test = await shift(employees[i]._id);
-          console.log(test,"TEEEESTsadfdsafsd");
-          employees[i].shifts = test;
-          employees[i].save();
-          // console.log(employees[i],"THIS IS HERE");
-          holder.push(employees[i]);
+          const shifts = await shift(employees[i]._id);
+          const rShifts = await rejectedShifts(employees[i]._id);
+          var employeeObj = {
+              _id: employees[i]._id,
+              fbID: employees[i].fbID,
+              firstName: employees[i].firstName,
+              lastName: employees[i].lastName,
+              timeZone: employees[i].timeZone,
+              profilePic: employees[i].profilePic,
+              __v: employees[i].__v,
+              company: employees[i].company,
+              role: employees[i].role,
+              hasMessage: employees[i].hasMessage,
+              lastMessage: employees[i].lastMessage,
+              shifts: shifts,
+              rejectedShifts:rShifts,
+          };
+          holder.push(employeeObj);
       }
       return holder;
   };
 
-  return User.find({company:companyID}).exec()
+  // query company for employees
+  return User.find({company:companyID,takesShifts:true}).exec()
     .then(async(employees) => {
-      const test = await loop(employees);
-      // console.log(test,"The real deal");
-      return employees;
+      const employeesWithShifts = await loop(employees);
+      return employeesWithShifts;
+      // return employees;
     })
     .catch((err) => {
-      return 'error occured';
+      return 'THAT ERROR '+err;
     });
 };

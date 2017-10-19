@@ -51,3 +51,36 @@ module.exports.getShiftByFBID = function (id,callback) {
 module.exports.addShift = function (shift, callback) {
     Shift.create(shift,callback);
 };
+
+module.exports.getAllShifts = () => {
+
+  async function loop(shifts) {
+      var holder = [];
+      for (let i = 0; i < shifts.length; i++) {
+          // await new Promise(resolve => setTimeout(resolve, 1000));
+          const sCompany = await Company.getCompanyById(shifts[i].company);
+          var shiftObj = {
+            startTime: shifts[i].startTime,
+            endTime:shifts[i].endTime,
+            employees: shifts[i].employees,
+            messagedEmployees: shifts[i].messagedEmployees,
+            rejectedEmployees: shifts[i].rejectedEmployees,
+            employeeCount:shifts[i].employeeCount,
+            company: sCompany,
+            role: shifts[i].role,
+          };
+          holder.push(shiftObj);
+      }
+      return holder;
+  };
+
+  return Shift.find({}).exec()
+    .then(async(shifts) => {
+      const shiftsWithCompanies = await loop(shifts);
+      return shifts;
+    })
+    .catch((err) => {
+      return ("error occured "+err);
+    });
+
+}

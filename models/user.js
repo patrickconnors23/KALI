@@ -44,6 +44,9 @@ var userSchema = mongoose.Schema({
   // specifies the user's role within the company
   // this determines which roles the employee can be assigned to
   role: String,
+
+  // determines whether employee signed up via messenger
+  takesShifts: Boolean,
 });
 //
 
@@ -53,8 +56,15 @@ module.exports.getUsers = function (callback, limit) {
     User.find(callback).limit(limit);
 };
 
-module.exports.getUserById = function (id,callback) {
-  User.findById(id, callback);
+module.exports.getUserById = function (id) {
+  return User.findOne({_id:id}).exec()
+    .then((user) => {
+      console.log(user);
+      return user;
+    })
+    .catch((err) => {
+      return 'error occured';
+    });
 };
 
 module.exports.getUserByFBID = function (id,callback) {

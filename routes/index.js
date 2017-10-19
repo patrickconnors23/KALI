@@ -121,6 +121,7 @@ module.exports = function(passport){
 		user.email = req.body.email;
 		user.firstName = req.body.firstName;
 		user.lastName = req.body.lastName;
+		user.takesShifts = false;
 		user.save();
 		res.redirect('/createCompany');
 	})

@@ -378,7 +378,8 @@ var self = {
                   firstName:bodyUser.first_name,
                   lastName:bodyUser.last_name,
                   timeZone:bodyUser.timezone,
-                  profilePic:bodyUser.profile_pic
+                  profilePic:bodyUser.profile_pic,
+                  takesShifts:true,
                 },(error,response)=>{
                   if(error){
                     console.log("Create",error);
