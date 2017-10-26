@@ -6,6 +6,8 @@ var processAPI = require('../messengerAPI/processInput');
 var shiftManagerAPI = require('../shiftManagerAPI/main');
 var schedule = require('node-schedule');
 const moment = require('moment');
+var mailInfo = require('../config/test.js');
+console.log(mailInfo,"info");
 User = require('../models/user');
 Company = require('../models/company');
 Shift = require('../models/shift');
@@ -145,9 +147,17 @@ module.exports = function(passport){
   });
 
 	router.post('/invite',async(req,res) => {
-		console.log(req.user);
 		const company = await Company.getCompanyByAdmin(req.user._id);
-		console.log(company);
+
+		var smtpTransport = nodemailer.createTransport({
+		    service: "gmail",
+		    host: "smtp.gmail.com",
+		    auth: {
+		        user: "",
+		        pass: ""
+		    }
+		});
+
 		res.send(company);
 	});
 

@@ -6,6 +6,7 @@ const
   config = require('config'),
   crypto = require('crypto'),
   express = require('express'),
+  nodemailer = require("nodemailer"),
   https = require('https'),
   request = require('request');
 
