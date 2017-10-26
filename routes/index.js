@@ -41,71 +41,26 @@ module.exports = function(passport){
 	});
 
   router.get('/home',async (req,res) => {
-    var hasCompany = false;
+		console.log("GOT HERE");
+		shiftManagerAPI.checkForUpdate();
 
-		//check whether user has added a company
-    Company.getCompanyByAdmin(req.user._id,(error,userCompany)=>{
-      if (error) {
-        console.log(error);
-      } else {
-				shiftManagerAPI.checkForUpdate();
-				// if the user has a company
-        if (userCompany!=null){
-					console.log(userCompany.roles[0]);
-          hasCompany=true;
-					// find the company's shifts
-          Shift.find({company:userCompany._id},async(error,shifts)=>{
-            var formattedShifts = [];
-            var counter = 0;
-            if (shifts.length > 0) {
-              shifts.forEach((shift)=>{
-                var shiftTimes = shiftManagerAPI.parseShiftTime(shift.startTime,shift.endTime);
-                User.find({_id:shift.employees},(error,employeeList)=>{
-                  counter++;
-                  var obj = {
-                    date:shiftTimes.date,
-                    startTime:shiftTimes.startTime,
-                    endTime:shiftTimes.endTime,
-                    employees:employeeList,
-                    employeeCount:shift.employeeCount
-                  };
-                  formattedShifts.push(obj);
-                  if (counter == shifts.length) {
-                    User.find({company:userCompany._id},(error,employees)=>{
-                      res.render('home', {
-                        hasCompany:hasCompany,
-                        company:userCompany,
-                        shifts:formattedShifts,
-                        employees:employees,
-												roles:userCompany.roles
-                      });
-                    })
-                  }
-                })
-              })
-						// if the user has no shifts
-            } else {
-              console.log("HITITIT");
-              res.render('home', {
-                hasCompany:hasCompany,
-                company:userCompany,
-                shifts:[],
-                employees:[],
-								roles:userCompany.roles
-              });
-            }
+		const userCompany = await Company.getCompanyByAdmin(req.user._id);
 
-          })
-				// if the user has no company
-        } else {
-					res.redirect('/personalInfo');
-        //   res.render('home', {
-        //     hasCompany:hasCompany,
-        //     company:userCompany,
-        //   });
-        }
-      }
-    })
+		if (userCompany == null){
+			res.redirect('/createCompany');
+		}
+
+		const shifts = await Shift.getShiftsByCompany(userCompany._id);
+		const employees = await User.getUserByCompany(userCompany._id);
+		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(shifts);
+
+		res.render('home', {
+			hasCompany:true,
+			company:userCompany,
+			shifts:formattedShifts,
+			employees:employees,
+			roles:userCompany.roles
+		});
   });
 
 	// renders the personal info page
@@ -187,8 +142,14 @@ module.exports = function(passport){
     const user = req.user._id;
     shiftManagerAPI.createShift(user,data);
     res.render('thanks', {});
+  });
 
-  })
+	router.post('/invite',async(req,res) => {
+		console.log(req.user);
+		const company = await Company.getCompanyByAdmin(req.user._id);
+		console.log(company);
+		res.send(company);
+	});
 
   return router
 }

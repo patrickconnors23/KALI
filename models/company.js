@@ -50,10 +50,15 @@ module.exports.getCompanyById = function (id) {
     });
 };
 
-module.exports.getCompanyByAdmin = function async(id,callback) {
-  var query = {admin:id};
-  Company.findOne(query, callback);
-};
+module.exports.getCompanyByAdmin = (userID) => {
+  return Company.findOne({admin:userID}).exec()
+    .then(async(company) => {
+      return company;
+    })
+    .catch((err) => {
+      return 'THAT ERROR '+err;
+    });
+},
 
 module.exports.addCompany = function (company, callback) {
     Company.create(company,callback);

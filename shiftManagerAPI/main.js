@@ -7,7 +7,7 @@ const moment = require('moment');
 var schedule = require('node-schedule');
 
 var self = {
-  
+
   sendMessages: async(company,shift)=>{
     // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
@@ -103,6 +103,7 @@ var self = {
     return sortedEmployeeOrder;
   },
 
+  // NEED TO IMPLEMENT THIS
   checkIfEmployeeBusy: (employee,shift) => {
     return false;
   },
@@ -401,6 +402,22 @@ var self = {
     var j = schedule.scheduleJob(jobName,formattedSendDate, function(){
       processAPI.shiftReminderProces(context,messengerID);
     });
+  },
+
+  formatShiftsForInterface: (shifts) => {
+    var formattedShifts = [];
+    shifts.forEach((shift)=>{
+			var shiftTimes = self.parseShiftTime(shift.startTime,shift.endTime);
+			var obj = {
+				date:shiftTimes.date,
+				startTime:shiftTimes.startTime,
+				endTime:shiftTimes.endTime,
+				employees:shift.employees,
+				employeeCount:shift.employeeCount
+			};
+			formattedShifts.push(obj);
+		});
+    return formattedShifts;
   },
 
   parseShiftTime: (startTime,endTime) => {

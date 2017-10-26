@@ -77,7 +77,39 @@ module.exports.getAllShifts = () => {
   return Shift.find({}).exec()
     .then(async(shifts) => {
       const shiftsWithCompanies = await loop(shifts);
-      return shifts;
+      return shiftsWithCompanies;
+    })
+    .catch((err) => {
+      return ("error occured "+err);
+    });
+
+}
+
+module.exports.getShiftsByCompany = (companyID) => {
+
+  async function loop(shifts) {
+      var holder = [];
+      for (let i = 0; i < shifts.length; i++) {
+          const sCompany = await Company.getCompanyById(shifts[i].company);
+          var shiftObj = {
+            startTime: shifts[i].startTime,
+            endTime:shifts[i].endTime,
+            employees: shifts[i].employees,
+            messagedEmployees: shifts[i].messagedEmployees,
+            rejectedEmployees: shifts[i].rejectedEmployees,
+            employeeCount:shifts[i].employeeCount,
+            company: sCompany,
+            role: shifts[i].role,
+          };
+          holder.push(shiftObj);
+      }
+      return holder;
+  };
+
+  return Shift.find({company:companyID}).exec()
+    .then(async(shifts) => {
+      const shiftsWithEmployees = await loop(shifts);
+      return shiftsWithEmployees;
     })
     .catch((err) => {
       return ("error occured "+err);

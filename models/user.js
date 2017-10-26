@@ -79,6 +79,7 @@ module.exports.addUser = function (user, callback) {
 module.exports.getUserByCompany = (companyID) => {
   return User.find({company:companyID}).exec()
     .then((employees) => {
+      console.log(employees,companyID,"test");
       return employees;
     })
     .catch((err) => {
