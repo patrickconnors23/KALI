@@ -1,33 +1,127 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-      <title>Kali</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <link rel="stylesheet" href="/style.css">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <title>Kali</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/kali.css">
   </head>
+
   <body>
-    <h3>Add Company</h3>
-    <form action="/createCompany" method="post">
-      <div class="form-group">
-        <label for="formGroupExampleInput">Company Name</label>
-        <input type="text" class="form-control" id="formGroupExampleInput" name="company" value="">
-      </div>
-      <div class="form-group">
-        <label for="formGroupExampleInput">Industry</label>
-        <input type="text" class="form-control" id="formGroupExampleInput" name="industry" value="">
-      </div>
-      <div class="form-group">
-        <label for="formGroupExampleInput">Number of Employees</label>
-        <input type="text" class="form-control" id="formGroupExampleInput" name="employeeCount" value="">
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
 
 
+    <!-- NAVBAR (bootstrap) -->
+    <nav id="nav-bar" class="navbar navbar-toggleable-md navbar-light bg-faded">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand kali" href="#">Kali</a>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav ml-auto">
+          <a class="nav-item nav-link pull-xs-right about" href="#">About</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Log-in Rectangle -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="offset-md-2 col-md-8 panel">
+          <div class="row">
+            <div class="arrow-left">
+              <a href="/personalInfo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+                    <path fill="#B7B7B7" fill-rule="evenodd" d="M12.5 25l1.794-1.741-9.509-9.509H25v-2.5H4.785l9.482-9.482L12.5 0 0 12.5 12.5 25"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class ="row">
+              <div class="offset-md-4 col-md-4 sign-head-text">
+                Account Information
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 offset-md-3 bubble-holder">
+              <div class="oval">
+                <div class="num-label">
+                  1
+                </div>
+              </div>
+              <p>
+                Personal Information
+              </p>
+            </div>
+            <div class="col-md-2  bubble-holder" id="bubble-holder-active">
+              <div class="oval-active">
+                <div class="num-label" id="num-label-active">
+                  2
+                </div>
+              </div>
+              <p>
+                Company Information
+              </p>
+            </div>
+            <div class="col-md-2 bubble-holder">
+              <div class="oval">
+                <div class="num-label">
+                  3
+                </div>
+              </div>
+              <p>
+                Company Roles
+              </p>
+            </div>
+          </div>
+          <div class ="row">
+            <div class="form-container col-md-6 offset-md-2">
+              <form action="/createCompany" method="post">
+                <div class="form-group">
+                  <label class="form-label" for="formGroupExampleInput">Company Name</label>
+                  <input type="text" class="form-input form-control" name="company" value="" placeholder="Corp Inc.">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="formGroupExampleInput">Industry</label>
+                  <select class="form-control form-input-select" name="industry">
+                    <option id="select-defaul" value="" selected>What kind of company are you?</option>
+                    <option value="event">Event Based</option>
+                    <option value="retail">Retail</option>
+                    <option value="hospitality">Hospitality</option>
+                    <option value="restaurant">Restaurant</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="formGroupExampleInput">Number of Employees</label>
+                  <select class="form-control form-input-select" name="employeeCount">
+                    <option id="select-defaul" value="" selected>How many employees do you have?</option>
+                    <option value="tiny"> <pre>&lt;</pre> 10</option>
+                    <option value="small">10 - 25</option>
+                    <option value="medium">25 - 49</option>
+                    <option value="large">50+</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn submit-button">Continue</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p class ="all-rights">
+        2017 Kali. All Rights Reserved.
+      </p>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
   </body>
+
 </html>

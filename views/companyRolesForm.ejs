@@ -1,30 +1,133 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-      <title>Kali</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <link rel="stylesheet" href="/style.css">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <title>Kali</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <script src="https://use.fontawesome.com/2f794972d4.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/kali.css">
   </head>
+
   <body>
-    <form action="/companyRoles" method="post">
-      <div class="form-group">
-        <label for="formGroupExampleInput">Company Roles</label>
-        <br />
-        <input type="checkbox" name="roles" value="Waiter">Waiter<br>
-        <input type="checkbox" name="roles" value="Manager">Manager<br>
-        <input type="checkbox" name="roles" value="Host">Host<br>
-        <input type="checkbox" name="roles" value="Chef">Chef<br>
-        <input type="checkbox" name="roles" value="Bus Boy">Bus Boy<br>
-        <!-- <input type="text" class="form-control" id="formGroupExampleInput" name="roles" value=""> -->
+
+
+    <!-- NAVBAR (bootstrap) -->
+    <nav id="nav-bar" class="navbar navbar-toggleable-md navbar-light bg-faded">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand kali" href="/">Kali</a>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav ml-auto">
+          <a class="nav-item nav-link pull-xs-right about" href="#">About</a>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </nav>
 
+    <!-- Log-in Rectangle -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="offset-md-2 col-md-8 panel">
+          <div class="row">
+            <div class="arrow-left">
+              <a href="/createCompany">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+                    <path fill="#B7B7B7" fill-rule="evenodd" d="M12.5 25l1.794-1.741-9.509-9.509H25v-2.5H4.785l9.482-9.482L12.5 0 0 12.5 12.5 25"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class ="row">
+              <div class="offset-md-4 col-md-4 sign-head-text">
+                Account Information
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 offset-md-3 bubble-holder">
+              <div class="oval">
+                <div class="num-label">
+                  1
+                </div>
+              </div>
+              <p>
+                Personal Information
+              </p>
+            </div>
+            <div class="col-md-2  bubble-holder">
+              <div class="oval">
+                <div class="num-label">
+                  2
+                </div>
+              </div>
+              <p>
+                Company Information
+              </p>
+            </div>
+            <div class="col-md-2  bubble-holder" id="bubble-holder-active">
+              <div class="oval-active">
+                <div class="num-label" id="num-label-active">
+                  3
+                </div>
+              </div>
+              <p>
+                Company Roles
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 offset-md-2 code-row">
+              Add the different types of employee roles found within your business.
+            </div>
+          </div>
+          <div class ="row">
+            <div class="form-container col-md-7 offset-md-2">
+              <form action="/companyRoles" method="post">
+                <div id="roleForm">
+                  <div class="form-group row" id="role-input-1">
+                    <div class="col-md-9">
+                      <label class="form-label" for="formGroupExampleInput">Role</label>
+                      <select class="form-control form-input-select" name="role1">
+                        <option id="select-defaul" value="" selected></option>
+                        <option value="Barista">Barista</option>
+                        <option value="Bartender">Bartender</option>
+                        <option value="Busser">Busser</option>
+                        <option value="Cashier">Cashier</option>
+                        <option value="Dishwasher">Dishwasher</option>
+                        <option value="Host">Host</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Runner">Runner</option>
+                        <option value="Server">Server</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2 x-out" onclick="del(1);">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="fake-btn col-md-5" id="fake-btn">
+                  Add Another <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+                      <path fill="#4A4A4A" fill-rule="evenodd" d="M1.4 12.6h11.2V1.4H1.4v11.2zM0 14h14V0H0v14zm6.3-6.3H4.2V6.3h2.1V4.2h1.4v2.1h2.1v1.4H7.7v2.1H6.3V7.7z"/>
+                  </svg>
+                </div>
+                <button type="submit" class="btn submit-button">Continue</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <footer class="footer">
+      <p class ="all-rights">
+        2017 Kali. All Rights Reserved.
+      </p>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="/scripts/roleForm.js"></script>
   </body>
+
 </html>

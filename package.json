@@ -31,6 +31,7 @@
     "mongoose": "^4.11.3",
     "node-schedule": "^1.2.4",
     "nodemailer": "^4.3.1",
+    "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^1.12.1",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
