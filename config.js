@@ -4,7 +4,8 @@ var config = {
       key: 'thesegKEysaRESOharedTO2GuEs',
       secret: 'versupersecretkeythatsbetterthantheotheronethatnoonewillguess'
     },
-    database: 'mongodb://heroku_fnltwb9k:cv1lj5dik299qm5dfg70vhm83e@ds135382.mlab.com:35382/heroku_fnltwb9k',
+    // mongodb://patcon23:sdafljfklasdjflkadsn@host1:port1
+    database: 'mongodb://heroku_j7pqr1r7:92qpv9f2g5ucftqnu8a5ob6j85@ds131900.mlab.com:31900/heroku_j7pqr1r7',
     facebook: {
       'appID' : '1966581126958029',
       'appSecret' : 'a8d4ea705b211710a6d66fdf8a25517f',
@@ -19,7 +20,7 @@ var config = {
     database: 'mongodb://localhost/fbDB',
     facebook: {
       'appID' : '1966581126958029',
-      'appSecret' : 'a8d4ea705b211710a6d66fdf8a25517f',
+      'appSecret' : 'DICKSa8d4ea705b211710a6d66fdf8a25517f',
       'callbackUrl' : 'http://localhost:7000/login/facebook/callback'
     }
   }
