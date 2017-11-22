@@ -67,9 +67,15 @@ module.exports.getUserById = function (id) {
     });
 };
 
-module.exports.getUserByFBID = function (id,callback) {
-  var query = {fbID:id};
-  User.findOne(query, callback);
+module.exports.getUserByFBID = function (id) {
+  return User.findOne({fbID:id}).exec()
+    .then((user) => {
+      console.log(user);
+      return user;
+    })
+    .catch((err) => {
+      return 'error occured';
+    });
 };
 
 module.exports.addUser = function (user, callback) {

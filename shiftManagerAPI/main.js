@@ -281,40 +281,39 @@ var self = {
   },
 
   // return future shifts for a user
-  viewShifts: (messengerID) => {
-    User.findOne({fbID:messengerID},(error,user) => {
-      Shift.find({employees:user._id},async(error,shifts) => {
-        if(shifts != null) {
-          var message = "I found your upcoming shifts: \n\n";
-          var counter = 0;
-          var futureShifts = await self.filterShifts(shifts);
-          if (futureShifts.length > 0){
-            futureShifts.forEach((shift)=>{
-              var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
+  viewShifts: async (messengerID) => {
+    var user = await User.getUserByFBID(messengerID);
+    var shifts = await Shift.getUserShifts(user._id);
 
-              // add shift to message
-              message += ("➡️ "+fmtTimes.date+
-              " from "+
-              fmtTimes.startTime+
-              " to "+
-              fmtTimes.endTime+
-              "\n\n");
-              counter++;
+    if(shifts != null) {
+      var message = "I found your upcoming shifts: \n\n";
+      var counter = 0;
+      var futureShifts = await self.filterShifts(shifts);
+      if (futureShifts.length > 0){
+        futureShifts.forEach((shift)=>{
+          var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
 
-              if (counter == futureShifts.length) {
-                sendAPI.sendTextMessage(messengerID,message);
-              }
-            })
-          } else{
-            sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available");
+          // add shift to message
+          message += ("➡️ "+fmtTimes.date+
+          " from "+
+          fmtTimes.startTime+
+          " to "+
+          fmtTimes.endTime+
+          "\n\n");
+          counter++;
+
+          if (counter == futureShifts.length) {
+            sendAPI.sendTextMessage(messengerID,message);
           }
+        })
+      } else{
+        sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available");
+      }
 
 
-        } else {
-          sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available")
-        }
-      })
-    })
+    } else {
+      sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available")
+    }
   },
 
   cancelShiftOptions: (messengerID) => {

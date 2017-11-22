@@ -85,6 +85,16 @@ module.exports.getAllShifts = () => {
 
 }
 
+module.exports.getUserShifts = (id) => {
+  return Shift.find({employees:id}).exec()
+    .then((shifts) => {
+      return shifts;
+    })
+    .catch((err) => {
+      return ("error occured getting shifts"+err);
+    });
+}
+
 module.exports.getShiftsByCompany = (companyID) => {
 
   async function loop(shifts) {
