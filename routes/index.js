@@ -6,7 +6,7 @@ var processAPI = require('../messengerAPI/processInput');
 var shiftManagerAPI = require('../shiftManagerAPI/main');
 var schedule = require('node-schedule');
 const moment = require('moment');
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport')
 var mailInfo = require('../config/mail.json');
 User = require('../models/user');
@@ -162,37 +162,37 @@ module.exports = function(passport){
     res.render('thanks', {});
   });
 
-	router.post('/invite',async(req,res) => {
-		const company = await Company.getCompanyByAdmin(req.user._id);
-		console.log(mailInfo.emailUsername,mailInfo.emailPassword);
-		var smtpTransport = nodemailer.createTransport({
-		    service: "gmail",
-		    host: "smtp.gmail.com",
-		    auth: {
-		        user: mailInfo.emailUsername,
-		        pass: mailInfo.emailPassword
-		    }
-		});
-
-		var mailOptions={
-		   to : "patrickconnors@college.harvard.edu",
-		   subject : "Join Kali",
-		   text : "Come Join Kali: http://m.me/HiKaliBot"
-		}
-		console.log(mailOptions);
-
-		smtpTransport.sendMail(mailOptions, function(error, response){
-			if(error){
-				console.log(error);
-				res.end("error");
-			}else{
-				console.log("Message sent: " + response.message);
-				res.end("sent");
-			}
-		});
-
-		res.redirect('/home');
-	});
+	// router.post('/invite',async(req,res) => {
+	// 	const company = await Company.getCompanyByAdmin(req.user._id);
+	// 	console.log(mailInfo.emailUsername,mailInfo.emailPassword);
+	// 	var smtpTransport = nodemailer.createTransport({
+	// 	    service: "gmail",
+	// 	    host: "smtp.gmail.com",
+	// 	    auth: {
+	// 	        user: mailInfo.emailUsername,
+	// 	        pass: mailInfo.emailPassword
+	// 	    }
+	// 	});
+  //
+	// 	var mailOptions={
+	// 	   to : "patrickconnors@college.harvard.edu",
+	// 	   subject : "Join Kali",
+	// 	   text : "Come Join Kali: http://m.me/HiKaliBot"
+	// 	}
+	// 	console.log(mailOptions);
+  //
+	// 	smtpTransport.sendMail(mailOptions, function(error, response){
+	// 		if(error){
+	// 			console.log(error);
+	// 			res.end("error");
+	// 		}else{
+	// 			console.log("Message sent: " + response.message);
+	// 			res.end("sent");
+	// 		}
+	// 	});
+  //
+	// 	res.redirect('/home');
+	// });
 
   return router
 }
