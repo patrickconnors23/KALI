@@ -2,7 +2,6 @@ var config = require('config');
 var express = require('express');
 var router = express.Router();
 var mAPI = require('../messengerAPI/controller')
-var processAPI = require('../messengerAPI/process');
 var shiftManagerAPI = require('../shiftManagerAPI/main');
 var schedule = require('node-schedule');
 const moment = require('moment');
@@ -44,6 +43,7 @@ module.exports = function(passport){
 	});
 
   router.get('/home',async (req,res) => {
+		console.log("GOT HOME");
 		shiftManagerAPI.checkForUpdate();
 		const userCompany = await Company.getCompanyByAdmin(req.user._id);
 
@@ -53,6 +53,7 @@ module.exports = function(passport){
 
 		const shifts = await Shift.getShiftsByCompany(userCompany._id);
 		const employees = await User.getUserByCompany(userCompany._id);
+		console.log("EEEEEEEMP",employees);
 		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(shifts);
 
 		res.render('home', {
@@ -113,8 +114,6 @@ module.exports = function(passport){
 		} else {
 			data.employeeCount = 75;
 		}
-
-		console.log(data);
 
 		const newCompany = {
 			name:data.company,

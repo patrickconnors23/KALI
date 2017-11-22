@@ -3,33 +3,37 @@ var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
 var Company = require('../models/company.js');
 const moment = require('moment');
-const pAPI = require('./process');
+var processMOD = require('../messengerAPI/test');
 var schedule = require('node-schedule');
 // var nodemailer = require("nodemailer");
 
 var self = {
 
-  sendMessages: async(company,shift)=>{
+  sendMessages: async(company,shiftID)=>{
+
+    var realShift = await Shift.getShiftById(shiftID);
+
     // format time object in a readable fashion and set context variables for message
-    var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
-    const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
+    var fmtTimes = self.parseShiftTime(realShift.startTime,realShift.endTime);
+    const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
 
     // get all users associated with the company
     // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
-    var employees = await Company.getEmployees(company._id)
+    var employees = await Company.getEmployees(company._id);
+
     // total number of employees needed
-    var shiftSpots = shift.employeeCount;
+    var shiftSpots = realShift.employeeCount;
 
     // init messsaged vars
     var messagedInit = 0;
     var deniedInit = 0;
 
     // set number of employees messaged in the past
-    if (shift.messagedEmployees != null) {
-      messagedInit = shift.messagedEmployees.length;
+    if (realShift.messagedEmployees != null) {
+      messagedInit = realShift.messagedEmployees.length;
     }
-    if (shift.rejectedEmployees != null) {
-      deniedInit = shift.rejectedEmployees.length;
+    if (realShift.rejectedEmployees != null) {
+      deniedInit = realShift.rejectedEmployees.length;
     }
 
     // check how many people have accepted plus messages are out there
@@ -39,19 +43,22 @@ var self = {
     var employeesNeeded = shiftSpots - employeesMessaged;
 
     // UPDATE WITH ABOVE FUNCTION ONCE FIXED
-    var orderedEmployees = self.orderEmployees(employees,shift.role);
+    var orderedEmployees = self.orderEmployees(employees,realShift.role);
 
     // ensure that we only message employees who can work at the time
     var availableEmployees = orderedEmployees.filter((employee)=>{
-      return !self.checkIfEmployeeBusy(employee,shift);
+      return !self.checkIfEmployeeBusy(employee,realShift);
     });
 
     // ensure that we haven't messaged this employee about the shift yet
     var unRequestedEmployees = availableEmployees.filter((employee)=>{
-      return !self.checkIfMessaged(employee,shift);
+      return !self.checkIfMessaged(employee,realShift);
     });
 
     var employeesToMessage = unRequestedEmployees.slice(0,employeesNeeded);
+
+    // console.log("MESSAGING DESE DUOODES",employeesToMessage);
+    processMOD.printD("WORD");
 
     if (orderedEmployees == []) {
       console.log("Returned No Employees");
@@ -63,10 +70,9 @@ var self = {
         writeEmployee.hasMessage = true;
         writeEmployee.save();
         employeesMessaged++;
-        shift.messagedEmployees.push(writeEmployee._id);
-        shift.save();
-        console.log(pAPI,sendAPI,"TEEEEST");
-        pAPI.queryShiftProcess(context,writeEmployee.fbID);
+        realShift.messagedEmployees.push(writeEmployee._id);
+        realShift.save();
+        processMOD.queryShiftProcess(context,writeEmployee.fbID);
       })
     }
   },
@@ -118,37 +124,33 @@ var self = {
     return alreadyMessaged;
   },
 
-  userRespondedToQuery: (messengerID) => {
-    User.findOne({fbID:messengerID},(error,user)=>{
-      user.hasMessage = false;
-      user.save();
-    })
+  userRespondedToQuery: async(messengerID) => {
+    var user = await User.getUserByFBID(messengerID);
+    user.hasMessage = false;
+    user.save();
   },
 
-  shiftDenied: (shiftID,userMessengerID) => {
-    Shift.findOne({_id:shiftID},(error,shift) => {
-      User.findOne({fbID:userMessengerID},(error,user) => {
-        Company.findOne({_id:shift.company},(error,company) => {
-          shift.rejectedEmployees.push(user._id);
-          shift.save();
-          self.sendMessages(company,shift);
-        })
-      })
-    })
+  shiftDenied: async(shiftID,userMessengerID) => {
+    var shift = await Shift.getShiftById(shiftID);
+    var user = await User.getUserByFBID(userMessengerID);
+    var company = await Company.getCompanyById(shift.company);
+
+    shift.rejectedEmployees.push(user._id);
+    shift.save();
+    self.sendMessages(company,shift._id);
+
   },
 
-  shiftAccepted: (shiftID,senderID) => {
-    Shift.findOne({_id:shiftID},(error,shift)=>{
-      User.findOne({fbID:senderID},(error,user)=>{
-        Company.findOne({_id:shift.company},(error,company) => {
-          var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
-          const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
-          self.scheduleReminder(context,shift.startTime,user.fbID);
-          shift.employees.push(user._id);
-          shift.save();
-        })
-      })
-    })
+  shiftAccepted: async(shiftID,senderID) => {
+    var shift = await Shift.getShiftById(shiftID);
+    var user = await User.getUserByFBID(senderID);
+    var company = await Company.getCompanyById(shift.company);
+
+    var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
+    const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
+    self.scheduleReminder(context,shift.startTime,user.fbID);
+    shift.employees.push(user._id);
+    shift.save();
   },
 
   // check whether a user has been messaged
@@ -167,31 +169,30 @@ var self = {
     })
   },
 
-  createShift: (userID,formData) => {
-    Company.findOne({admin:userID},(error,company) => {
+  createShift: async(userID,formData) => {
+    var company = await Company.getCompanyByAdmin(userID);
 
-      var startDate = formData.bootDate[0];
-      var endDate = formData.bootDate[1];
+    var startDate = formData.bootDate[0];
+    var endDate = formData.bootDate[1];
 
-      // create shift object
-      const newShift = {
-        employeeCount:formData.workersCount,
-        startTime:moment(startDate),
-        endTime:moment(endDate),
-        company:company._id,
-        role:formData.workerType
-      };
+    // create shift object
+    const newShift = {
+      employeeCount:formData.workersCount,
+      startTime:moment(startDate),
+      endTime:moment(endDate),
+      company:company._id,
+      role:formData.workerType
+    };
 
-      Shift.create(newShift,(error,response)=>{
-        if (error){
-          console.log("error");
-        } else {
-          self.sendMessages(company,response);
-          self.createWeeklyShift(newShift);
-        }
-      })
-      // console.log("test");
+    Shift.create(newShift,(error,response)=>{
+      if (error){
+        console.log("error");
+      } else {
+        self.sendMessages(company,response._id);
+        self.createWeeklyShift(newShift);
+      }
     })
+      // console.log("test");
   },
 
   // recurseively create shifts into the future
@@ -227,7 +228,6 @@ var self = {
     var futureShifts = self.filterShifts(shifts);
     // get the current date to compare shifts to
     var currentDate = moment();
-
     // iterate through all future shifts
     var sortedFutureShifts = futureShifts.sort((a,b) => {
       return a.startTime - b.startTime;
@@ -257,14 +257,16 @@ var self = {
     const companyMessageManager = (shiftObjectArray) => {
       const timer = (shiftObject,index) => {
             setTimeout(function () {
-                self.sendMessages(shiftObject[0],shiftObject[1]);
+                self.sendMessages(shiftObject[0],shiftObject[1]._id);
             }, index*500);
         }
       shiftObjectArray.forEach((shiftObject,index)=>{
         timer(shiftObject,index)
       })
     };
+
     var sendObj = {};
+
     // sort shifts by company
     updateArray.forEach((shiftSend)=> {
       var objectField = shiftSend[0]._id;
@@ -274,7 +276,6 @@ var self = {
         sendObj[objectField] = [shiftSend];
       }
     });
-
     Object.entries(sendObj).forEach(([key, value]) => {
         companyMessageManager(value);
     });
@@ -283,8 +284,11 @@ var self = {
   // return future shifts for a user
   viewShifts: async (messengerID) => {
     var user = await User.getUserByFBID(messengerID);
+    var shifts1 = await Shift.getAllShifts();
+    console.log(shifts1);
     var shifts = await Shift.getUserShifts(user._id);
-    console.log(user,shifts,"tSHIIIIFFTS");
+    // console.log("SHIIIIFTS",shifts);
+
     if(shifts != null) {
       var message = "I found your upcoming shifts: \n\n";
       var counter = 0;
@@ -361,7 +365,7 @@ var self = {
           shift.employees = newEmployees;
           shift.rejectedEmployees.push(user._id);
           shift.save();
-          self.sendMessages(company,shift);
+          self.sendMessages(company,shift._id);
           self.cancelShiftReminder(shiftID,messengerID);
         })
       })
@@ -398,7 +402,7 @@ var self = {
       sendDate.minutes()
     );
     var j = schedule.scheduleJob(jobName,formattedSendDate, function(){
-      pAPI.shiftReminderProces(context,messengerID);
+      processMOD.shiftReminderProces(context,messengerID);
     });
   },
 

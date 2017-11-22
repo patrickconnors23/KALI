@@ -39,8 +39,14 @@ module.exports.getShifts = function (callback, limit) {
     Shift.find(callback).limit(limit);
 };
 
-module.exports.getShiftById = function (id,callback) {
-  Shift.findById(id, callback);
+module.exports.getShiftById = function (id) {
+  return Shift.findOne({_id:id}).exec()
+    .then((shift) => {
+      return shift;
+    })
+    .catch((err) => {
+      return ("error occured getting shifts"+err);
+    });
 };
 
 module.exports.getShiftByFBID = function (id,callback) {
@@ -68,6 +74,7 @@ module.exports.getAllShifts = () => {
             employeeCount:shifts[i].employeeCount,
             company: sCompany,
             role: shifts[i].role,
+            _id:shifts[i]._id
           };
           holder.push(shiftObj);
       }
@@ -86,8 +93,10 @@ module.exports.getAllShifts = () => {
 }
 
 module.exports.getUserShifts = (id) => {
+  console.log("outer",id);
   return Shift.find({employees:id}).exec()
     .then((shifts) => {
+      console.log("inner",shifts);
       return shifts;
     })
     .catch((err) => {

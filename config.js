@@ -20,8 +20,8 @@ var config = {
     database: 'mongodb://localhost/fbDB',
     facebook: {
       'appID' : '1966581126958029',
-      'appSecret' : 'DICKSa8d4ea705b211710a6d66fdf8a25517f',
-      'callbackUrl' : 'http://localhost:7000/login/facebook/callback'
+      'appSecret' : 'a8d4ea705b211710a6d66fdf8a25517f',
+      'callbackUrl' : 'https://hikali.herokuapp.com/login/facebook/callback'
     }
   }
 }

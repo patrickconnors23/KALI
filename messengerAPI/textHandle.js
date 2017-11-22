@@ -1,14 +1,15 @@
 var sendAPI = require('./send.js');
 var mAPI = require('./controller.js');
 var messageIDs = require('./messageIDs.js');
-var User = require('../models/user.js');
+var User = require('../models/user');
 var Company = require('../models/company.js');
-const Shift = require('../models/shift.js');
 const shiftManagerAPI = require('../shiftManagerAPI/main');
 
-const config = require('config');
+var self =  {
 
-var self = {
+  printD: (word)=>{
+    console.log("FINALY GOT DIS TO WORK",word);
+  },
   //LANGUAGE PROCESSING METHODS
   getStartedProcess: (formattedText,senderID) => {
     var text = "Hi👋 I'm Kali. I'll help make sure you never miss a shift. Ready to get started?";
@@ -32,76 +33,67 @@ var self = {
     sendAPI.sendTextMessage(senderID,text,messageIDs.QUERY_COMPANY);
   },
 
-  receiveCompanyCodeProcess: (text,senderID) => {
+  receiveCompanyCodeProcess: async(text,senderID) => {
     const DNE = "🤔 That code doesn't match one I've sent recently. Try double checking your email and typing it again 🔍";
-    console.log("TEXTTT",text);
-    Company.findOne({secretCode:text},(error,company)=> {
-      if(error) {
-        console.log(error);
-      } else {
-        if (company == null) {
-          sendAPI.sendTextMessage(senderID,DNE,messageIDs.QUERY_COMPANY)
-        } else {
-          User.getUserByFBID(senderID,(error,user)=>{
-            if(error){
-              console.log(error);
-            }else{
-              //// CHANGE THIS IN PRODUCTION
-              if (user.company != null) {
-                if (user.company.toString() != company._id.toString()){
-                  console.log(user.company,company._id);
-                  company.employees.push(user._id);
-                  company.save();
-                }
-              }
-              user.company = company._id;
-              user.save();
+    var company = await Company.getCompanyByCode(text);
 
-              sendAPI.sendTextMessage(senderID,
-                ("We've connected your account with "+company.name+"'s ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
-                messageIDs.COMPANY_CONFIRMED);
-              setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
+    if (company == null) {
+      sendAPI.sendTextMessage(senderID,DNE,messageIDs.QUERY_COMPANY)
+    } else {
 
-            }
-          });
+      var user = await User.getUserByFBID(senderID);
+
+      if (user.company != null) {
+        if (user.company.toString() != company._id.toString()){
+          company.employees.push(user._id);
+          company.save();
         }
       }
-    })
+
+      user.company = company._id;
+      user.save();
+
+      sendAPI.sendTextMessage(senderID,
+        ("We've connected your account with "+company.name+"'s ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
+        messageIDs.COMPANY_CONFIRMED);
+      setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
+
+    }
+
   },
 
-  roleQueryProcess: (senderID) => {
+  roleQueryProcess: async(senderID) => {
     var text = "What's your role 👷 within the company?";
     var quickReplies = [];
-    User.findOne({fbID:senderID},(error,user)=>{
-      Company.findOne({_id:user.company},(error,company)=>{
-        company.roles.forEach((role)=>{
-          var newQR = {
-            "content_type":"text",
-            "title":role,
-            "payload":"ROLE:"+role
-          };
-          quickReplies.push(newQR);
-        });
-        sendAPI.sendQuickReply(senderID,quickReplies,text,messageIDs.QUERY_ROLE);
-      })
-    })
+    var user = await User.getUserByFBID(senderID);
+    var company = await Company.getCompanyById(user.company);
+
+    company.roles.forEach((role)=>{
+      var newQR = {
+        "content_type":"text",
+        "title":role,
+        "payload":"ROLE:"+role
+      };
+      quickReplies.push(newQR);
+    });
+
+    sendAPI.sendQuickReply(senderID,quickReplies,text,messageIDs.QUERY_ROLE);
   },
 
   // process the role which the user selected
-  receivedRoleProcess: (rolePrefix,role,senderID) => {
-    User.findOne({fbID:senderID},(error,user)=>{
-      Company.findOne({_id:user.company},(error,company)=>{
-        // text to send
-        const text = "👌 Cool, I'll send you a message whenever "+
-          company.name+" neeeds a "+role+"!";
+  receivedRoleProcess: async(rolePrefix,role,senderID) => {
+    var user = await User.getUserByFBID(senderID);
+    var company = await Company.getCompanyById(user.company);
 
-        sendAPI.sendTextMessage(senderID,text);
+    // text to send
+    const text = "👌 Cool, I'll send you a message whenever "+
+      company.name+" needs a "+role+"!";
 
-        // save the user's selected role in the db
-        user.role = role;
-        user.save();
-      });
-    });
+    sendAPI.sendTextMessage(senderID,text);
+
+    // save the user's selected role in the db
+    user.role = role;
+    user.save();
   },
 
   queryShiftProcess: (context,senderID) => {
@@ -144,6 +136,7 @@ var self = {
   viewShiftProcess: (senderID) => {
     shiftManagerAPI.viewShifts(senderID);
   },
+
   cancelShiftProcess:(senderID)=>{
     shiftManagerAPI.cancelShiftOptions(senderID);
   },

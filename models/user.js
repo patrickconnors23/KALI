@@ -59,7 +59,6 @@ module.exports.getUsers = function (callback, limit) {
 module.exports.getUserById = function (id) {
   return User.findOne({_id:id}).exec()
     .then((user) => {
-      console.log(user);
       return user;
     })
     .catch((err) => {
@@ -68,6 +67,7 @@ module.exports.getUserById = function (id) {
 };
 
 module.exports.getUserByFBID = function (id) {
+  console.log("called",id);
   return User.findOne({fbID:id}).exec()
     .then((user) => {
       console.log(user);
@@ -85,7 +85,6 @@ module.exports.addUser = function (user, callback) {
 module.exports.getUserByCompany = (companyID) => {
   return User.find({company:companyID}).exec()
     .then((employees) => {
-      console.log(employees,companyID,"test");
       return employees;
     })
     .catch((err) => {

@@ -54,10 +54,6 @@
                 <div>
                   <h5><%= shifts[i].date %> from <%= shifts[i].startTime %> to <%= shifts[i].endTime %></h5>
                   <p><%= shifts[i].employees.length %> / <%= shifts[i].employeeCount %></p>
-                  <% for(var j=0; j<shifts[i].employees.length; j++) {%>
-                    <p><%= shifts[i].employees[j].firstName %> <%= shifts[i].employees[j].lastName %></p>
-                    <!-- <p><%= shifts[i].employees[j]%> </p> -->
-                  <% } %>
                 </div>
               <% } %>
             </div>

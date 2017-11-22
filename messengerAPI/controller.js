@@ -6,7 +6,7 @@ const
   https = require('https'),
   request = require('request');
 
-var processAPI = require('./process');
+var handleAPI = require('./textHandle');
 var sendAPI = require('./send');
 var messageIDs = require('./messageIDs');
 
@@ -107,7 +107,6 @@ var self = {
   },
 
   receivedMessage: (event) => {
-    console.log(processAPI,"CONTOOLER");
     // console.log("EVENT",event);
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
@@ -147,48 +146,40 @@ var self = {
     var formattedReply = quickReply.split(':');
     switch (formattedReply[0]) {
       case "YES_START":
-        processAPI.companyQueryProcess(senderID);
+        handleAPI.companyQueryProcess(senderID);
         break;
       case "NO_START":
 
         break;
       case "CAN_WORK":
-        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        handleAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
         break;
       case "CAN_NOT_WORK":
-        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        handleAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
         break;
       case "CANCEL_SHIFT_ID":
-        processAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
+        handleAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
         break;
       case "ROLE":
-        processAPI.receivedRoleProcess(formattedReply[0],formattedReply[1],senderID);
+        handleAPI.receivedRoleProcess(formattedReply[0],formattedReply[1],senderID);
       default:
 
     }
   },
 
-  processTextMessage: (senderID,messageText) => {
-    User.getUserByFBID(senderID, (error,user) => {
-      if(error){
-        console.log(error);
-      }else{
-        // console.log("USER",user);
-        const lastMessage = user.lastMessage;
-        self.processText(senderID,messageText,lastMessage);
-      }
-    });
+  processTextMessage: async(senderID,messageText) => {
+    var user = await User.getUserByFBID(senderID);
+    self.processText(senderID,messageText,user.lastMessage);
   },
 
   processText: (senderID,messageText,lastMessage) => {
     const formattedText = messageText.toLowerCase();
-    // console.log("LAST",lastMessage);
     switch (lastMessage) {
       case "ASK_IF_USER_AVAILABLE_TO_WORK":
-        processAPI.canWorkProcesss(messageText,senderID);
+        handleAPI.canWorkProcesss(messageText,senderID);
         break;
       case messageIDs.QUERY_COMPANY:
-        processAPI.receiveCompanyCodeProcess(messageText,senderID);
+        handleAPI.receiveCompanyCodeProcess(messageText,senderID);
         break;
       default:
         sendAPI.sendTextMessage(senderID,
@@ -213,13 +204,13 @@ var self = {
     switch (payload) {
       case 'GET_STARTED':
         console.log("Hit get started");
-        processAPI.getStartedProcess("",senderID);
+        handleAPI.getStartedProcess("",senderID);
         break;
       case 'VIEW_SHIFTS':
-        processAPI.viewShiftProcess(senderID);
+        handleAPI.viewShiftProcess(senderID);
         break;
       case 'CANCEL_SHIFT':
-        processAPI.cancelShiftProcess(senderID);
+        handleAPI.cancelShiftProcess(senderID);
       default:
         var buttons = [{
           type: "postback",

@@ -41,7 +41,17 @@ module.exports.getCompanies = function (callback, limit) {
 };
 
 module.exports.getCompanyById = function (id) {
-  return Company.find({_id:id}).exec()
+  return Company.findOne({_id:id}).exec()
+    .then((company) => {
+      return company;
+    })
+    .catch((err) => {
+      return ("THIS ERROR "+err);
+    });
+};
+
+module.exports.getCompanyByCode = function (code) {
+  return Company.findOne({secretCode:code}).exec()
     .then((company) => {
       return company;
     })
