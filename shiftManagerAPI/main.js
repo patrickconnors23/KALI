@@ -53,8 +53,6 @@ var self = {
 
     var employeesToMessage = unRequestedEmployees.slice(0,employeesNeeded);
 
-    console.log(orderedEmployees.length,availableEmployees.length,unRequestedEmployees.length);
-
     if (orderedEmployees == []) {
       console.log("Returned No Employees");
     } else {
@@ -65,10 +63,9 @@ var self = {
         writeEmployee.hasMessage = true;
         writeEmployee.save();
         employeesMessaged++;
-        console.log(employee);
         shift.messagedEmployees.push(writeEmployee._id);
         shift.save();
-        console.log(processAPI,"TEEEEST");
+        console.log(processAPI,sendAPI,"TEEEEST");
         processAPI.queryShiftProcess(context,writeEmployee.fbID);
       })
     }
