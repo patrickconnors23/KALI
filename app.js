@@ -6,7 +6,7 @@ const
   config = require('config'),
   crypto = require('crypto'),
   express = require('express'),
-  nodemailer = require("nodemailer"),
+  // nodemailer = require("nodemailer"),
   https = require('https'),
   request = require('request');
 
@@ -43,15 +43,10 @@ app.use('/messenger',messengerRoutes);
 
 // App Secret can be retrieved from the App Dashboard
 const APP_SECRET = config.get('appSecret');
-
-  console.log(APP_SECRET,"SEEECRET");
-
 // Arbitrary value used to validate a webhook
 const VALIDATION_TOKEN = config.get('validationToken');
-
 // Generate a page access token for your page from the App Dashboard
 const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
-
 // URL where the app is running (include protocol). Used to point to scripts and
 // assets located at this address.
 const SERVER_URL = config.get('serverURL');

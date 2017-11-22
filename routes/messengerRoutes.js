@@ -5,9 +5,8 @@ var router = express.Router();
 var mAPI = require('../messengerAPI/controller')
 User = require('../models/user');
 
-const VALIDATION_TOKEN = (process.env.MESSENGER_VALIDATION_TOKEN) ?
-  (process.env.MESSENGER_VALIDATION_TOKEN) :
-  config.get('validationToken');
+// Arbitrary value used to validate a webhook
+const VALIDATION_TOKEN = config.get('validationToken');
 
 router.get('/webhook', function(req, res) {
   console.log("HIT WEBHOOK");

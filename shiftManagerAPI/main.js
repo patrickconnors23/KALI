@@ -5,7 +5,7 @@ var Shift = require('../models/shift.js');
 var Company = require('../models/company.js');
 const moment = require('moment');
 var schedule = require('node-schedule');
-var nodemailer = require("nodemailer");
+// var nodemailer = require("nodemailer");
 
 var self = {
 
