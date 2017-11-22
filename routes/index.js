@@ -177,7 +177,7 @@ module.exports = function(passport){
 		var mailOptions={
 		   to : "patrickconnors@college.harvard.edu",
 		   subject : "Join Kali",
-		   text : "Come Join Kali: http://m.me/ShiftBot"
+		   text : "Come Join Kali: http://m.me/HiKaliBot"
 		}
 		console.log(mailOptions);
 
