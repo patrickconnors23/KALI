@@ -284,7 +284,7 @@ var self = {
   viewShifts: async (messengerID) => {
     var user = await User.getUserByFBID(messengerID);
     var shifts = await Shift.getUserShifts(user._id);
-
+    console.log(user,shifts,"tSHIIIIFFTS");
     if(shifts != null) {
       var message = "I found your upcoming shifts: \n\n";
       var counter = 0;
