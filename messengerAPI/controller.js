@@ -6,7 +6,7 @@ const
   https = require('https'),
   request = require('request');
 
-var processAPI = require('./processInput.js');
+var processAPI = require('./process.js');
 var sendAPI = require('./send.js');
 var messageIDs = require('./messageIDs.js');
 

@@ -1,4 +1,4 @@
-const processAPI = require('../messengerAPI/processInput.js');
+const processAPI = require('../messengerAPI/process.js');
 const sendAPI = require('../messengerAPI/send');
 var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
