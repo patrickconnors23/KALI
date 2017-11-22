@@ -8,17 +8,6 @@ const shiftManagerAPI = require('../shiftManagerAPI/main');
 
 const config = require('config');
 
-// App Secret can be retrieved from the App Dashboard
-const APP_SECRET = config.get('appSecret');
-// Arbitrary value used to validate a webhook
-const VALIDATION_TOKEN = config.get('validationToken');
-// Generate a page access token for your page from the App Dashboard
-const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
-// URL where the app is running (include protocol). Used to point to scripts and
-// assets located at this address.
-const SERVER_URL = config.get('serverURL');
-
-
 var self = {
   //LANGUAGE PROCESSING METHODS
   getStartedProcess: (formattedText,senderID) => {
