@@ -308,12 +308,12 @@ var self = {
               }
             })
           } else{
-            sendAPI.sendTextMessage(messengerID,"Looks like your not signed up for any shifts.");
+            sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available");
           }
 
 
         } else {
-          sendAPI.sendTextMessage(messengerID,"Looks like you don't have any shifts.")
+          sendAPI.sendTextMessage(messengerID,"🤷‍Looks like you're not signed up for any shifts. I'll message you 💬 if any become available")
         }
       })
     })
@@ -323,7 +323,7 @@ var self = {
     User.findOne({fbID:messengerID},(error,user) => {
       Shift.find({employees:user._id},async(error,shifts) => {
         if(shifts != null) {
-          var message = "Which shift would you like to cancel?";
+          var message = "Which shift would you like to cancel 🤔? Remember, cancelling a shift too close to its scheduled time will make it less likely for you to be picked later.";
           var quickReplies = [];
           var counter = 0;
           var futureShifts = await self.filterShifts(shifts);
@@ -344,11 +344,11 @@ var self = {
               }
             })
           } else {
-            sendAPI.sendTextMessage(messengerID,"Looks like you don't have any shifts scheduled.")
+            sendAPI.sendTextMessage(messengerID,"I didn't find any shifts to cancel. You're all set 😊")
           }
 
         } else {
-          sendAPI.sendTextMessage(messengerID,"Looks like you don't have any shifts scheduled.")
+          sendAPI.sendTextMessage(messengerID,"I didn't find any shifts to cancel. You're all set 😊")
         }
       })
     })

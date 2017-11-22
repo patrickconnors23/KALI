@@ -88,7 +88,7 @@ module.exports = function(passport){
 		} else if (data.password == "") {
 			res.redirect('/personalInfo');
 		}
-		
+
 		user.email = req.body.email;
 		user.firstName = req.body.firstName;
 		user.lastName = req.body.lastName;
@@ -177,7 +177,7 @@ module.exports = function(passport){
 		var mailOptions={
 		   to : "patrickconnors@college.harvard.edu",
 		   subject : "Join Kali",
-		   text : "Come Join Kali"
+		   text : "Come Join Kali: http://m.me/ShiftBot"
 		}
 		console.log(mailOptions);
 
@@ -191,7 +191,7 @@ module.exports = function(passport){
 			}
 		});
 
-		res.send(company);
+		res.redirect('/home');
 	});
 
   return router

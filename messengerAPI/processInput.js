@@ -32,7 +32,7 @@ const SERVER_URL = (process.env.SERVER_URL) ?
 var self = {
   //LANGUAGE PROCESSING METHODS
   getStartedProcess: (formattedText,senderID) => {
-    var text = "Hi, welcome to ShiftBot. I'll help you manage your shifts. Ready to get started?";
+    var text = "Hi👋 I'm Kali. I'll help make sure you never miss a shift. Ready to get started?";
     var quickReplies = [
       {
         "content_type":"text",
@@ -49,12 +49,12 @@ var self = {
   },
 
   companyQueryProcess: (senderID) => {
-    var text = "Let's get working. Your employer should have given you a code that identifies their company. Please type that code!";
+    var text = "Let's get working 🔨 Please type the secret code that I emailed/ texted you 👍";
     sendAPI.sendTextMessage(senderID,text,messageIDs.QUERY_COMPANY);
   },
 
   receiveCompanyCodeProcess: (text,senderID) => {
-    const DNE = "We couldn't find a company that matched that code. Make sure you typed it correctly and try again.";
+    const DNE = "🤔 That code doesn't match one I've sent recently. Try double checking your email and typing it again 🔍";
     console.log("TEXTTT",text);
     Company.findOne({secretCode:text},(error,company)=> {
       if(error) {
@@ -79,7 +79,7 @@ var self = {
               user.save();
 
               sendAPI.sendTextMessage(senderID,
-                ("We've connected your account with "+company.name+"'s. Whenever they need you for a shift, you'll get a message here. You can view your messages and shifts via the bottom menu."),
+                ("We've connected your account with "+company.name+"'s ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
                 messageIDs.COMPANY_CONFIRMED);
               setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
 
@@ -91,7 +91,7 @@ var self = {
   },
 
   roleQueryProcess: (senderID) => {
-    var text = "What's your role within the company";
+    var text = "What's your role 👷 within the company?";
     var quickReplies = [];
     User.findOne({fbID:senderID},(error,user)=>{
       Company.findOne({_id:user.company},(error,company)=>{
@@ -113,7 +113,7 @@ var self = {
     User.findOne({fbID:senderID},(error,user)=>{
       Company.findOne({_id:user.company},(error,company)=>{
         // text to send
-        const text = "Cool, we'll send you a notification whenever "+
+        const text = "👌 Cool, I'll send you a message whenever "+
           company.name+" neeeds a "+role+"!";
 
         sendAPI.sendTextMessage(senderID,text);
@@ -126,8 +126,8 @@ var self = {
   },
 
   queryShiftProcess: (context,senderID) => {
-    var text = "Hi, can you work for "+context.company+
-      " on "+context.date+" from "+context.startTime+" to "+context.endTime;
+    var text = "Hi 👋 can you work for "+context.company+
+      " on "+context.date+" from "+context.startTime+" to "+context.endTime+"?";
     var quickReplies = [
       {
         "content_type":"text",
@@ -151,11 +151,11 @@ var self = {
     switch (replyText) {
       case "CAN_WORK":
         shiftManagerAPI.shiftAccepted(shiftID,senderID);
-        sendAPI.sendTextMessage(senderID,"Great, you're confirmed for the shift.","CAN_WORK");
+        sendAPI.sendTextMessage(senderID,"👌 Great, you're confirmed for the shift 🎉🎉🎉","CAN_WORK");
         break;
       case "CAN_NOT_WORK":
         shiftManagerAPI.shiftDenied(shiftID,senderID);
-        sendAPI.sendTextMessage(senderID,"That's too bad, maybe next time.","CAN_NOT_WORK");
+        sendAPI.sendTextMessage(senderID,"😕 That's too bad, maybe next time.","CAN_NOT_WORK");
         break;
       default:
         sendAPI.sendTextMessage(senderID,"WHAT?")
@@ -172,12 +172,12 @@ var self = {
   cancellationProcess: (replyText,shiftID,senderID)=>{
     console.log("processing cancellation");
     shiftManagerAPI.cancelShift(shiftID,senderID);
-    sendAPI.sendTextMessage(senderID,"That's too bad - this will make it less likely for us to pick you for shifts in the future.");
+    sendAPI.sendTextMessage(senderID,"That's too bad 😒 this will make it less likely for us to pick you for shifts in the future.");
   },
 
   shiftReminderProces: (context,senderID)=>{
     console.log("reminder");
-    var message = "Just wanted to remind you that you're scheduled to work at "+
+    var message = "😎 Just wanted to remind you that you're scheduled to work at "+
       context.company+" today from "+context.startTime+" to "+context.endTime;
     sendAPI.sendTextMessage(senderID,message);
   }

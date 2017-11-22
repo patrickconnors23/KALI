@@ -201,7 +201,7 @@ var self = {
         break;
       default:
         sendAPI.sendTextMessage(senderID,
-          "Sorry, I didn't understand that.","CANT_UNDERSTAND");
+          "😔 Sorry, my boss hasn't programmed me to understand complicated messages yet. Try hiting one of your menu buttons ↘️","CANT_UNDERSTAND");
         break;
 
     }
@@ -243,7 +243,7 @@ var self = {
     var greetingData = {
       setting_type: "greeting",
       greeting:{
-        text:"Hi, I'm a ShiftBot, I'll help you manage your work schedule."
+        text:"Hi 👋 I'm Kali, I'm a 🤖 here to help you manage your work schedule."
       }
     };
     self.createGreetingApi(greetingData);
