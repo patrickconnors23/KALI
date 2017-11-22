@@ -1,4 +1,4 @@
-const processAPI = require('../messengerAPI/processInput');
+var processAPI = require('../messengerAPI/processInput');
 const sendAPI = require('../messengerAPI/send');
 var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
@@ -68,6 +68,7 @@ var self = {
         console.log(employee);
         shift.messagedEmployees.push(writeEmployee._id);
         shift.save();
+        console.log(processAPI,"TEEEEST");
         processAPI.queryShiftProcess(context,writeEmployee.fbID);
       })
     }
