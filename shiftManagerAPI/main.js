@@ -3,7 +3,7 @@ var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
 var Company = require('../models/company.js');
 const moment = require('moment');
-const pAPI = require('../messengerAPI/process');
+const pAPI = require('./process');
 var schedule = require('node-schedule');
 // var nodemailer = require("nodemailer");
 
