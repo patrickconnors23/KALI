@@ -107,6 +107,7 @@ var self = {
   },
 
   receivedMessage: (event) => {
+    console.log(processAPI,"CONTOOLER");
     // console.log("EVENT",event);
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
