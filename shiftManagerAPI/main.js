@@ -3,7 +3,8 @@ var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
 var Company = require('../models/company.js');
 const moment = require('moment');
-const processAPI = require('../messengerAPI/process');
+// const pAPI = require('../messengerAPI/process');
+import * as pAPI from "../messengerAPI/process";
 var schedule = require('node-schedule');
 // var nodemailer = require("nodemailer");
 
@@ -65,8 +66,8 @@ var self = {
         employeesMessaged++;
         shift.messagedEmployees.push(writeEmployee._id);
         shift.save();
-        console.log(processAPI,sendAPI,"TEEEEST");
-        processAPI.queryShiftProcess(context,writeEmployee.fbID);
+        console.log(pAPI,sendAPI,"TEEEEST");
+        pAPI.queryShiftProcess(context,writeEmployee.fbID);
       })
     }
   },
@@ -399,7 +400,7 @@ var self = {
       sendDate.minutes()
     );
     var j = schedule.scheduleJob(jobName,formattedSendDate, function(){
-      processAPI.shiftReminderProces(context,messengerID);
+      pAPI.shiftReminderProces(context,messengerID);
     });
   },
 
