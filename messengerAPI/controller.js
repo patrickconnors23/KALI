@@ -6,9 +6,9 @@ const
   https = require('https'),
   request = require('request');
 
-var processAPI = require('./process.js');
-var sendAPI = require('./send.js');
-var messageIDs = require('./messageIDs.js');
+var processAPI = require('./process');
+var sendAPI = require('./send');
+var messageIDs = require('./messageIDs');
 
 // App Secret can be retrieved from the App Dashboard
 const APP_SECRET = config.get('appSecret');
