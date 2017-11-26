@@ -172,7 +172,6 @@ module.exports = function(passport){
 
 	router.post('/invite',async(req,res) => {
 		const company = await Company.getCompanyByAdmin(req.user._id);
-		console.log(mailInfo.emailUsername,mailInfo.emailPassword);
 		var smtpTransport = nodemailer.createTransport({
 		    service: "gmail",
 		    host: "smtp.gmail.com",
