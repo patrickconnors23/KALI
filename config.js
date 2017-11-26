@@ -21,7 +21,7 @@ var config = {
     facebook: {
       'appID' : '1966581126958029',
       'appSecret' : 'a8d4ea705b211710a6d66fdf8a25517f',
-      'callbackUrl' : 'https://2cbad90d.ngrok.io/login/facebook/callback'
+      'callbackUrl' : 'https://hikali.herokuapp.com/login/facebook/callback'
     }
   }
 }
