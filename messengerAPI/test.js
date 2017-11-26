@@ -8,7 +8,7 @@ const shiftManagerAPI = require('../shiftManagerAPI/main');
 var self =  {
 
   printD: (word)=>{
-    console.log("FINALY GOT DIS TO WORK",word);
+    return 0;
   },
 
   getStartedProcess: (formattedText,senderID) => {
@@ -54,7 +54,7 @@ var self =  {
       user.save();
 
       sendAPI.sendTextMessage(senderID,
-        ("We've connected your account with "+company.name+"'s ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
+        ("Looks like you work for "+user.company.name+" ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
         messageIDs.COMPANY_CONFIRMED);
       setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
 

@@ -1,0 +1,11 @@
+<div class="row names">
+  Patrick Connors
+</div>
+<div class="row inviteButton">
+  <div class="s">
+    Invite Employees
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+        <path fill="#FFF" fill-rule="evenodd" d="M14 6.3v1.4H7.7V14H6.3V7.7H0V6.3h6.3V0h1.4v6.3z"/>
+    </svg>
+  </div>
+</div>

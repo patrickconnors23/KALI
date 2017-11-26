@@ -1,95 +1,245 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-      <title>Kali</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <!-- <link rel="stylesheet" href="/style.css"> -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-      <!-- Optional theme -->
+    <title>Kali</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/kali.css">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+    <!-- Include Date Range Picker -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+
   </head>
-  <body>
-    <div class="container-fluid">
-      <h1>Home</h1>
 
-      <% if (!hasCompany) {%>
-        <h3>Add Company</h3>
-        <form action="/createCompany" method="post">
-          <div class="form-group">
-            <label for="formGroupExampleInput">Company Name</label>
-            <input type="text" class="form-control" id="formGroupExampleInput" name="company" value="">
+  <body>
+
+
+    <!-- NAVBAR (bootstrap) -->
+    <nav id="nav-bar" class="navbar navbar-toggleable-md navbar-light bg-faded">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand kali" href="#">Kali</a>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav ml-auto">
+          <a class="nav-item nav-link pull-xs-right about" href="#">About</a>
+          <a class="nav-item nav-link pull-xs-right about" href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Log-in Rectangle -->
+    <div class="container-fluid">
+      <div class="panelHome">
+        <div class="row interHeader">
+          <div class="employee-header employee-roster-header col-md-2">
+            <div id="roster-header-text">
+              Employee Roster
+            </div>
           </div>
-          <div class="form-group">
-            <label for="formGroupExampleInput2">Secret Code</label>
-            <input type="text" class="form-control" id="formGroupExampleInput2" name="secret" value="" placeholder="short code that users can remember">
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      <% } else {%>
-        <div class="row">
-          <div class="col-md-6">
+          <div class="calHeader col-md-10 employee-roster-header ">
             <div class="row">
-              <div class="col-md-6">
-                <h2><%=company.name%></h2>
+              <div id="date-label" class="col-md-9">
+                Your Week: <%= weekInterval.startDate %> - <%= weekInterval.endDate %>
+              </div>
+              <div class="create-shift-button-container col-md-2">
+                <button class="btn create-shift-button" data-toggle="modal" data-target="#createShiftModal">
+                  Create Shift
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                      <path fill="#FFF" fill-rule="evenodd" d="M6 0l-.861.836L9.703 5.4H0v1.2h9.703l-4.551 4.552L6 12l6-6-6-6"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <h4>Secret Code: <%=company.secretCode%></h4>
-          </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <h3>Active Shifts</h3>
-            <div>
-              <% for(var i=0; i<shifts.length; i++) {%>
-                <div>
-                  <h5><%= shifts[i].date %> from <%= shifts[i].startTime %> to <%= shifts[i].endTime %></h5>
-                  <p><%= shifts[i].employees.length %> / <%= shifts[i].employeeCount %></p>
-                </div>
-              <% } %>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <h3>Employees</h3>
-            <div>
+        <div class="row week-header-container">
+
+          <div class="employee-header col-md-2" id="employeeCol">
+            <div class="names">
               <% for(var i=0; i<employees.length; i++) {%>
                 <div>
                   <!-- <img src=<%= employees[i].profilePic %> height="40" width="40"/> -->
-                  <h5><%= employees[i].firstName %> <%= employees[i].lastName %></h5>
+                  <%= employees[i].firstName %> <%= employees[i].lastName %>
                 </div>
               <% } %>
             </div>
-            <form action="/invite" method="post">
-              <button type="submit"class="btn btn-primary">Invite</button>
-            </form>
+            <a href="#" class="no-u">
+              <div class="inviteButton" data-toggle="modal" data-target="#exampleModal">
+                  Invite Employees
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+                      <path fill="#FFF" fill-rule="evenodd" d="M14 6.3v1.4H7.7V14H6.3V7.7H0V6.3h6.3V0h1.4v6.3z"/>
+                  </svg>
+              </div>
+            </a>
+          </div>
+
+          <div class="cal-week-header col-md-10">
+            <div class="row calendar-grid">
+              <div class="hour-labels">
+                <div class="week-header">
+
+                </div>
+                <div class="cal-hour-label first-label">
+                  12 am
+                </div>
+                <div class="cal-hour-label">
+                  1 am
+                </div>
+                <div class="cal-hour-label">
+                  2 am
+                </div>
+                <div class="cal-hour-label">
+                  3 am
+                </div>
+                <div class="cal-hour-label">
+                  4 am
+                </div>
+                <div class="cal-hour-label">
+                  5 am
+                </div>
+                <div class="cal-hour-label">
+                  6 am
+                </div>
+                <div class="cal-hour-label">
+                  7 am
+                </div>
+                <div class="cal-hour-label">
+                  8 am
+                </div>
+                <div class="cal-hour-label">
+                  9 am
+                </div>
+                <div class="cal-hour-label">
+                  10 am
+                </div>
+                <div class="cal-hour-label">
+                  11 am
+                </div>
+                <div class="cal-hour-label">
+                  12 pm
+                </div>
+                <div class="cal-hour-label">
+                  1 pm
+                </div>
+                <div class="cal-hour-label">
+                  2 pm
+                </div>
+                <div class="cal-hour-label">
+                  3 pm
+                </div>
+                <div class="cal-hour-label">
+                  4 pm
+                </div>
+                <div class="cal-hour-label">
+                  5 pm
+                </div>
+                <div class="cal-hour-label">
+                  6 pm
+                </div>
+                <div class="cal-hour-label">
+                  7 pm
+                </div>
+                <div class="cal-hour-label">
+                  8 pm
+                </div>
+                <div class="cal-hour-label">
+                  9 pm
+                </div>
+                <div class="cal-hour-label">
+                  10 pm
+                </div>
+                <div class="cal-hour-label">
+                  11 pm
+                </div>
+              </div>
+
+              <% for(var i=0; i< shiftDays.length; i++) {%>
+                <div class="week-col">
+                  <div class="week-header">
+                    <div class="title">
+                      <%=  shiftDays[i].day %>
+                    </div>
+                    <div class="title">
+                      <%=  shiftDays[i].date %>
+                    </div>
+                  </div>
+
+                  <% for(var j=0; j<shiftDays[i].shifts.length; j++) {%>
+                    <% if (isNaN(shiftDays[i].shifts[j])) {%>
+
+                      <% if (shiftDays[i].shifts[j].shiftLength < (3 * 3.75)) {%>
+                        <div class="shift-container-small <%=  shiftDays[i].shifts[j].isFilled %>" style="height:<%= shiftDays[i].shifts[j].shiftLength %>%;">
+                            <div class="shift-container-small-content">
+                              <%=  shiftDays[i].shifts[j].role %>: <%=  shiftDays[i].shifts[j].employees.length %> / <%=  shiftDays[i].shifts[j].employeeCount %>
+                            </div>
+                        </div>
+                      <%}else{%>
+                        <div class="shift-container <%=  shiftDays[i].shifts[j].isFilled %>" style="height:<%= shiftDays[i].shifts[j].shiftLength %>%;">
+                          <div class="shift-header-container">
+                            <div class="shift-container-role">
+                              <%=  shiftDays[i].shifts[j].role %>
+                            </div>
+                            <div class="shift-container-time">
+                              <%=  shiftDays[i].shifts[j].startTime %> - <%=  shiftDays[i].shifts[j].endTime %>
+                            </div>
+                          </div>
+                          <div class="shift-container-count">
+                            <%=  shiftDays[i].shifts[j].employees.length %> / <%=  shiftDays[i].shifts[j].employeeCount %>
+                          </div>
+
+                        </div>
+                      <%}%>
+                    <% } else {%>
+                      <% for(var k=0; k<shiftDays[i].shifts[j]; k++) {%>
+                        <div class="calendar-content">
+
+                        </div>
+                      <% } %>
+                    <% } %>
+                  <% } %>
+
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <!-- Modal -->
+    <!-- Modal -->
+    <!-- Modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="createShiftModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+          <div class="modal-body">
             <h3>Create Shift</h3>
             <form action="/createShift" method="post">
               <div class="form-group">
-                  <label for="formGroupExampleInput2">Start Time</label>
-                  <div class='input-group date' id='datetimepicker6'>
-                      <input type='text' class="form-control" name="bootDate" value="" placeholder="test"/>
-                      <span class="input-group-addon">
-                          <span class="glyphicon glyphicon-calendar"></span>
-                      </span>
-                  </div>
-              </div>
-              <div class="form-group">
-                  <label for="formGroupExampleInput2">End Time</label>
-                  <div class='input-group date' id='datetimepicker7'>
-                      <input type='text' class="form-control" name="bootDate" value=""/>
-                      <span class="input-group-addon">
-                          <span class="glyphicon glyphicon-calendar"></span>
-                      </span>
-                  </div>
+                <label for="formGroupExample">Shift Times</label>
+                <input type="text" class="form-control" name="daterange" value="<%= datePickerDate %>" />
               </div>
               <div class="form-group">
                 <label for="formGroupExampleInput2"># of Workers</label>
@@ -106,36 +256,48 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             </form>
           </div>
+
         </div>
-
-      <% } %>
-
-    </div>
-    <div class="container">
-      <div class='col-md-5'>
-
-      </div>
-      <div class='col-md-5'>
-
       </div>
     </div>
-    <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+          <div class="modal-body">
+            <h3>Invite Employees</h3>
+            <form action="/invite" method="post">
+              <div class="form-group">
+                <label for="formGroupExample">Employee Emails</label>
+                <input type="text" class="form-control" name="email1" value=""/>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p class ="all-rights">
+        2017 Kali. All Rights Reserved.
+      </p>
+    </footer>
+
     <script type="text/javascript">
-        $(function () {
-            $('#datetimepicker6').datetimepicker();
-            $('#datetimepicker7').datetimepicker({
-                useCurrent: false //Important! See issue #1075
-            });
-            $("#datetimepicker6").on("dp.change", function (e) {
-                $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-            });
-            $("#datetimepicker7").on("dp.change", function (e) {
-                var date2 = moment(e.date._d).add(1,'days');
-                $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-            });
+    $(function() {
+        $('input[name="daterange"]').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 15,
+            locale: {
+                format: 'MM/DD/YYYY h:mm A'
+            }
         });
+    });
     </script>
+
   </body>
+
 </html>

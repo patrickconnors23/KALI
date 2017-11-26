@@ -67,7 +67,6 @@ module.exports.getUserById = function (id) {
 };
 
 module.exports.getUserByFBID = function (id) {
-  console.log("called",id);
   return User.findOne({fbID:id}).exec()
     .then((user) => {
       console.log(user);

@@ -50,14 +50,22 @@ var self = {
       return !self.checkIfEmployeeBusy(employee,realShift);
     });
 
+    // make sure we don't send to people who haven't responded to last one
+    var canMessage = availableEmployees.filter((employee)=>{
+      return !employee.hasMessage;
+    });
+
     // ensure that we haven't messaged this employee about the shift yet
-    var unRequestedEmployees = availableEmployees.filter((employee)=>{
+    var unRequestedEmployees = canMessage.filter((employee)=>{
       return !self.checkIfMessaged(employee,realShift);
     });
 
-    var employeesToMessage = unRequestedEmployees.slice(0,employeesNeeded);
+    var correctRoles = unRequestedEmployees.filter((employee)=>{
+      return realShift.role == employee.role;
+    })
 
-    // console.log("MESSAGING DESE DUOODES",employeesToMessage);
+    var employeesToMessage = correctRoles.slice(0,employeesNeeded);
+
     processMOD.printD("WORD");
 
     if (orderedEmployees == []) {
@@ -172,8 +180,9 @@ var self = {
   createShift: async(userID,formData) => {
     var company = await Company.getCompanyByAdmin(userID);
 
-    var startDate = formData.bootDate[0];
-    var endDate = formData.bootDate[1];
+    var dateRange = formData.daterange.split('-');
+    var startDate = dateRange[0].trim();;
+    var endDate = dateRange[1].trim();;
 
     // create shift object
     const newShift = {
@@ -192,7 +201,6 @@ var self = {
         self.createWeeklyShift(newShift);
       }
     })
-      // console.log("test");
   },
 
   // recurseively create shifts into the future
@@ -258,7 +266,7 @@ var self = {
       const timer = (shiftObject,index) => {
             setTimeout(function () {
                 self.sendMessages(shiftObject[0],shiftObject[1]._id);
-            }, index*500);
+            }, index*1000);
         }
       shiftObjectArray.forEach((shiftObject,index)=>{
         timer(shiftObject,index)
@@ -277,7 +285,10 @@ var self = {
       }
     });
     Object.entries(sendObj).forEach(([key, value]) => {
-        companyMessageManager(value);
+        var sortedValues = value.sort((a,b)=>{
+          return (moment(a[1].startTime).diff(moment(b[1].startTime)));
+        });
+        companyMessageManager(sortedValues);
     });
   },
 
@@ -285,7 +296,6 @@ var self = {
   viewShifts: async (messengerID) => {
     var user = await User.getUserByFBID(messengerID);
     var shifts1 = await Shift.getAllShifts();
-    console.log(shifts1);
     var shifts = await Shift.getUserShifts(user._id);
     // console.log("SHIIIIFTS",shifts);
 
@@ -406,20 +416,160 @@ var self = {
     });
   },
 
-  formatShiftsForInterface: (shifts) => {
-    var formattedShifts = [];
+  getWeeksShifts: (shifts) => {
+    var startDate = new moment();
+    var today = startDate.day();
+    startDate.hour(0);
+    startDate.minute(0);
+    startDate.second(0);
+    startDate.day(startDate.day() - startDate.day());
+
+    var endDate = new moment();
+    endDate.hour(23);
+    endDate.minute(59);
+    endDate.second(59);
+    endDate.day(endDate.day() + 6 - endDate.day());
+
+    var weekShifts = shifts.filter(shift=>{
+      return moment(shift.startTime).isBetween(startDate, endDate);;
+    })
+
+    return weekShifts;
+  },
+
+  getWeekInterVal: () => {
+    var startDate = new moment();
+    var today = startDate.day();
+    startDate.hour(0);
+    startDate.minute(0);
+    startDate.second(0);
+    startDate.day(startDate.day() - startDate.day());
+
+    var endDate = new moment();
+    endDate.hour(23);
+    endDate.minute(59);
+    endDate.second(59);
+    endDate.day(endDate.day() + 6 - endDate.day());
+
+    return {
+      startDate: startDate.format("MM/DD/YY"),
+      endDate:endDate.format("MM/DD/YY")
+    }
+  },
+
+  formatShiftsForInterface: (shifts,weekInterval) => {
+    var formattedShifts = [[],[],[],[],[],[],[]];
+    var ret = []
     shifts.forEach((shift)=>{
+      var date = moment(shift.startTime);
+      var endDate = moment(shift.endTime);
 			var shiftTimes = self.parseShiftTime(shift.startTime,shift.endTime);
-			var obj = {
+      var isFilled = shift.employees.length == shift.employeeCount ? "shift-filled" : "shift-open";
+
+      var obj = {
 				date:shiftTimes.date,
 				startTime:shiftTimes.startTime,
 				endTime:shiftTimes.endTime,
 				employees:shift.employees,
-				employeeCount:shift.employeeCount
+				employeeCount:shift.employeeCount,
+        rawStartDate:date,
+        rawEndDate:endDate,
+        shiftLength:(endDate.hour()-date.hour())*3.75,
+        isFilled: isFilled,
+        role:shift.role
 			};
-			formattedShifts.push(obj);
+			formattedShifts[date.day()].push(obj);
 		});
-    return formattedShifts;
+    var counter = 0;
+    var initDay = weekInterval.startDate.split('/')[1];
+
+    var initDate = moment(weekInterval.startDate);
+
+    function nth(n){return["st","nd","rd"][((n+90)%100-10)%10-1]||"th"}
+
+    function addSpacing(shiftDays) {
+      shiftDays.forEach(day=>{
+
+        var intervalTracker = [];
+        var start;
+        var end;
+        var cursor;
+        for (var i = 0; i < day.shifts.length; i++) {
+          start = day.shifts[i].rawStartDate.hour();
+          end = day.shifts[i].rawEndDate.hour();
+
+          if (i == 0 && start != 0){
+            intervalTracker.push(start);
+          }
+
+          if (start!=cursor && i > 0) {
+            intervalTracker.push(start-cursor);
+          }
+          intervalTracker.push(day.shifts[i]);
+          cursor = end;
+        }
+        if (isNaN(end)) {
+          intervalTracker.push(24);
+        } else {
+          if (end != 24) {
+            intervalTracker.push(24-end);
+          }
+        }
+        day.shifts = intervalTracker;
+      });
+
+      return shiftDays;
+    }
+
+    formattedShifts.forEach(day=>{
+
+      day.sort(function(a,b) {
+        return a.rawStartDate.diff(b.rawStartDate);
+      })
+      var dateContainer;
+      if (counter > 0){
+        dateContainer = initDate.add(1,'d').date();
+      }else {
+        dateContainer = initDate.date();
+      }
+      var newObj = {
+        date: (dateContainer) + nth(dateContainer),
+        shifts:day,
+        day: self.intToDay(counter),
+        overlap:0,
+      };
+      ret.push(newObj);
+      counter++;
+    })
+    return addSpacing(ret);
+
+
+  },
+
+  intToDay: (int) => {
+    switch (int) {
+      case 0:
+        return "Sunday";
+        break;
+      case 1:
+        return "Monday";
+        break;
+      case 2:
+        return "Tuesday";
+        break;
+      case 3:
+        return "Wednesday";
+        break;
+      case 4:
+        return "Thursday";
+        break;
+      case 5:
+        return "Friday";
+        break;
+      case 6:
+        return "Saturday"
+        break;
+    }
   },
 
   parseShiftTime: (startTime,endTime) => {
@@ -428,6 +578,10 @@ var self = {
     var formattedEnd = moment(endTime).format("h:mm a");
     return {date:formattedDate,startTime:formattedStart,endTime:formattedEnd};
   },
+
+  getDatePickerDate: () => {
+    return moment().format("MM/DD/YYYY") + " 12:00 PM - " + moment().format("MM/DD/YYYY") + " 12:01 PM";
+  }
 }
 
 module.exports = self;

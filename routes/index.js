@@ -5,9 +5,9 @@ var mAPI = require('../messengerAPI/controller')
 var shiftManagerAPI = require('../shiftManagerAPI/main');
 var schedule = require('node-schedule');
 const moment = require('moment');
-// const nodemailer = require("nodemailer");
-// var smtpTransport = require('nodemailer-smtp-transport')
-// var mailInfo = require('../config/mail.json');
+const nodemailer = require("nodemailer");
+var smtpTransport = require('nodemailer-smtp-transport');
+var mailInfo = require('../config/mail.json');
 User = require('../models/user');
 Company = require('../models/company');
 Shift = require('../models/shift');
@@ -42,26 +42,35 @@ module.exports = function(passport){
 		res.render('index', {});
 	});
 
-  router.get('/home',async (req,res) => {
-		console.log("GOT HOME");
-		shiftManagerAPI.checkForUpdate();
-		const userCompany = await Company.getCompanyByAdmin(req.user._id);
+	router.get('/home1', async (req, res) => {
+		res.render('home1', {});
+	});
 
+  router.get('/home',async (req,res) => {
+
+		shiftManagerAPI.checkForUpdate();
+
+		const userCompany = await Company.getCompanyByAdmin(req.user._id);
 		if (userCompany == null){
 			res.redirect('/personalInfo');
 		}
 
 		const shifts = await Shift.getShiftsByCompany(userCompany._id);
+		const weekShifts = await shiftManagerAPI.getWeeksShifts(shifts);
 		const employees = await User.getUserByCompany(userCompany._id);
-		console.log("EEEEEEEMP",employees);
-		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(shifts);
+		const weekInterval = shiftManagerAPI.getWeekInterVal();
+		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(weekShifts,weekInterval);
+		const dateForDatePicker = shiftManagerAPI.getDatePickerDate();
 
 		res.render('home', {
 			hasCompany:true,
 			company:userCompany,
-			shifts:formattedShifts,
+			shiftDays:formattedShifts,
 			employees:employees,
-			roles:userCompany.roles
+			weekInterval:weekInterval,
+			roles:userCompany.roles,
+			num:3.75,
+			datePickerDate:dateForDatePicker,
 		});
   });
 
@@ -158,40 +167,43 @@ module.exports = function(passport){
     const data = req.body;
     const user = req.user._id;
     shiftManagerAPI.createShift(user,data);
-    res.render('thanks', {});
+    res.redirect('/home');
   });
 
-	// router.post('/invite',async(req,res) => {
-	// 	const company = await Company.getCompanyByAdmin(req.user._id);
-	// 	console.log(mailInfo.emailUsername,mailInfo.emailPassword);
-	// 	var smtpTransport = nodemailer.createTransport({
-	// 	    service: "gmail",
-	// 	    host: "smtp.gmail.com",
-	// 	    auth: {
-	// 	        user: mailInfo.emailUsername,
-	// 	        pass: mailInfo.emailPassword
-	// 	    }
-	// 	});
-  //
-	// 	var mailOptions={
-	// 	   to : "patrickconnors@college.harvard.edu",
-	// 	   subject : "Join Kali",
-	// 	   text : "Come Join Kali: http://m.me/HiKaliBot"
-	// 	}
-	// 	console.log(mailOptions);
-  //
-	// 	smtpTransport.sendMail(mailOptions, function(error, response){
-	// 		if(error){
-	// 			console.log(error);
-	// 			res.end("error");
-	// 		}else{
-	// 			console.log("Message sent: " + response.message);
-	// 			res.end("sent");
-	// 		}
-	// 	});
-  //
-	// 	res.redirect('/home');
-	// });
+	router.post('/invite',async(req,res) => {
+		const company = await Company.getCompanyByAdmin(req.user._id);
+		console.log(mailInfo.emailUsername,mailInfo.emailPassword);
+		var smtpTransport = nodemailer.createTransport({
+		    service: "gmail",
+		    host: "smtp.gmail.com",
+		    auth: {
+		        user: mailInfo.emailUsername,
+		        pass: mailInfo.emailPassword
+		    }
+		});
+
+		var subjectLine = req.user.firstName+" "+req.user.lastName+" from "
+			+company.name+" has invited you to join Kali"
+
+		var mailOptions={
+		   to : req.body.email1,
+		   subject : subjectLine,
+		   text : "Come Join Kali: http://m.me/HiKaliBot"
+		}
+		console.log(mailOptions);
+
+		smtpTransport.sendMail(mailOptions, function(error, response){
+			if(error){
+				console.log(error);
+				res.end("error");
+			}else{
+				console.log("Message sent: " + response.message);
+				res.end("sent");
+			}
+		});
+
+		res.redirect('/home');
+	});
 
   return router
 }
