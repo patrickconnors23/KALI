@@ -177,8 +177,8 @@ module.exports = function(passport){
 		    service: "gmail",
 		    host: "smtp.gmail.com",
 		    auth: {
-		        user: mailInfo.emailUsername,
-		        pass: mailInfo.emailPassword
+		        user: "hikalibot@gmail.com",
+		        pass: "7jdbj4D8l"
 		    }
 		});
 
