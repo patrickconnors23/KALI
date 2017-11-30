@@ -36,7 +36,8 @@
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "random-number": "^0.0.9",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "supports-color": "^5.0.1"
   },
   "engines": {
     "node": "8.0.0"
