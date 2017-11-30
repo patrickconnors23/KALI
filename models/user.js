@@ -66,6 +66,16 @@ module.exports.getUserById = function (id) {
     });
 };
 
+module.exports.getUsersFromArray = function (ids) {
+  return User.find({_id:{$in:ids}}).exec()
+    .then((users) => {
+      return users;
+    })
+    .catch((err) => {
+      return 'error occured';
+    });
+};
+
 module.exports.getUserByFBID = function (id) {
   return User.findOne({fbID:id}).exec()
     .then((user) => {

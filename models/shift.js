@@ -110,15 +110,18 @@ module.exports.getShiftsByCompany = (companyID) => {
       var holder = [];
       for (let i = 0; i < shifts.length; i++) {
           const sCompany = await Company.getCompanyById(shifts[i].company);
+          const sEmp = await User.getUsersFromArray(shifts[i].employees)
           var shiftObj = {
             startTime: shifts[i].startTime,
             endTime:shifts[i].endTime,
-            employees: shifts[i].employees,
+            // employees: shifts[i].employees,
+            employees:sEmp,
             messagedEmployees: shifts[i].messagedEmployees,
             rejectedEmployees: shifts[i].rejectedEmployees,
             employeeCount:shifts[i].employeeCount,
             company: sCompany,
             role: shifts[i].role,
+            id:shifts[i]._id,
           };
           holder.push(shiftObj);
       }

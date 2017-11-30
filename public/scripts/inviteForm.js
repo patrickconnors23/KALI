@@ -26,4 +26,5 @@ $(document).ready(function(){
 
 function del(counterCaught) {
   $('#role-input-'+counterCaught).remove();
+
 }

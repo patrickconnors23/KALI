@@ -477,7 +477,8 @@ var self = {
         rawEndDate:endDate,
         shiftLength:(endDate.hour()-date.hour())*3.75,
         isFilled: isFilled,
-        role:shift.role
+        role:shift.role,
+        id:shift.id,
 			};
 			formattedShifts[date.day()].push(obj);
 		});

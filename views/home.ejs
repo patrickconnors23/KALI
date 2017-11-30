@@ -56,7 +56,7 @@
       <div class="panelHome">
         <div class="row interHeader">
           <div class="employee-header employee-roster-header col-md-2">
-            <div id="roster-header-text">
+            <div id="roster-header-text" >
               Employee Roster
             </div>
           </div>
@@ -198,7 +198,7 @@
                             </div>
                         </div>
                       <%}else{%>
-                        <div class="shift-container <%=  shiftDays[i].shifts[j].isFilled %>" style="height:<%= shiftDays[i].shifts[j].shiftLength %>%;">
+                        <div class="shift-container <%=  shiftDays[i].shifts[j].isFilled %>" style="height:<%= shiftDays[i].shifts[j].shiftLength %>%;" data-toggle="modal" data-target="#<%= shiftDays[i].shifts[j].id %>">
                           <div class="shift-header-container">
                             <div class="shift-container-role">
                               <%=  shiftDays[i].shifts[j].role %>
@@ -210,6 +210,36 @@
                           <div class="shift-container-count">
                             <%=  shiftDays[i].shifts[j].employees.length %> / <%=  shiftDays[i].shifts[j].employeeCount %>
                           </div>
+
+                          <div class="modal fade" id="<%= shiftDays[i].shifts[j].id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                              <div class="modal-body">
+                                <div class="shiftModalHeader">
+                                  <%=  shiftDays[i].shifts[j].role %>
+                                </div>
+                                <div class="shiftModal">
+                                  <%=  shiftDays[i].shifts[j].date %>
+                                </div>
+                                <div class="shiftModal">
+                                  <%=  shiftDays[i].shifts[j].startTime %> - <%=  shiftDays[i].shifts[j].endTime %>
+                                </div>
+                                <div class="shiftModalHeader2">
+                                  Employees
+                                </div>
+                                <% for(var x=0; x<shiftDays[i].shifts[j].employees.length; x++) {%>
+                                  <div class="shiftModal">
+                                    <%=  shiftDays[i].shifts[j].employees[x].firstName %> <%=  shiftDays[i].shifts[j].employees[x].lastName %>
+                                  </div>
+                                <% } %>
+                                <div class="shiftModal <%=  shiftDays[i].shifts[j].isFilled %>-Text">
+                                  <%=  shiftDays[i].shifts[j].employees.length %> / <%=  shiftDays[i].shifts[j].employeeCount %>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
 
                         </div>
                       <%}%>

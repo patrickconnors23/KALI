@@ -553,3 +553,34 @@
   margin-bottom: 15px;
   font-size: 16px;
 }
+
+.shiftModal {
+  color: black;
+  font-size: 14px;
+}
+
+.shiftModalHeader {
+  color: black;
+  font-size: 20px;
+  padding-bottom: 10px;
+}
+
+.shift-filled-Text{
+  color:#89DE9B;
+  font-weight: bold;
+  padding-top: 5px;
+  font-size: 16px;
+}
+
+.shift-open-Text {
+  color:#DD8B87;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.shiftModalHeader2 {
+  color: black;
+  font-size: 20px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
