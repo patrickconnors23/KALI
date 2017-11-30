@@ -67,8 +67,6 @@ module.exports = function(passport){
 		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(weekShifts,weekInterval);
 		const dateForDatePicker = shiftManagerAPI.getDatePickerDate();
 
-		console.log(formattedShifts[4].shifts[1].employees);
-
 		res.render('home', {
 			hasCompany:true,
 			company:userCompany,
