@@ -20,6 +20,11 @@
  font-family: Lato, sans serif;
 }
 
+.kali-logo{
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 
 .panel{
   margin-top: 50px;
@@ -489,4 +494,62 @@
   height: 3.75%;
   font-size: 9px;
   color: #5c5c5c;
+}
+
+/*HOME PAGE MODALS*/
+
+.modal-body {
+  padding-top: 20px;
+  padding-bottom: 30px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.modal-header {
+  color: #86a6df;
+  text-align: left;
+  font-size: 25px;
+  letter-spacing: 1s.1px;
+  margin-left: 0px;
+  margin-bottom: 10px;
+  padding-left: 0px;
+  border: none;
+}
+
+.form-label2 {
+  padding-top: 5px;
+  margin-bottom: 15px;
+	font-family: Lato;
+	font-size: 20px;
+	letter-spacing: 1.1px;
+	text-align: left;
+	color: #4a4a4a;
+}
+
+.create-shift-date-form{
+  margin-top: 5px;
+}
+
+.create-shift-worker-form{
+  margin-top: 40px;
+}
+
+.create-shift-type-form {
+  margin-top: 40px;
+  margin-bottom: 15px;
+}
+
+.x-out-modal{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.invite-x{
+  padding-left: 0px;
+  margin-left: 0px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 16px;
 }

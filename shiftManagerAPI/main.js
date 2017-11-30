@@ -404,6 +404,7 @@ var self = {
     var jobName = context.shiftID+'/'+messengerID;
     var date = moment(startTime);
     var sendDate = date.subtract(2,'h');
+    console.log("SCHEDULING JOB");
     var formattedSendDate = new Date(
       sendDate.year(),
       sendDate.month(),

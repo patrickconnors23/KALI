@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Kali</title>
+    <title>Kali - your personal shift managing assistant</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <link rel="icon"
+      type="image/png"
+      href="/assets/images/kali-logo-blue.png">
 
     <link rel="stylesheet" type="text/css" href="/assets/css/kali.css">
 
@@ -36,7 +40,9 @@
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand kali" href="#">Kali</a>
+      <a class="navbar-brand kali-logo" href="#">
+        <img src="/assets/images/kali-logo-blue.png" alt="" height="40px" width="40px">
+      </a>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav ml-auto">
           <a class="nav-item nav-link pull-xs-right about" href="#">About</a>
@@ -235,25 +241,32 @@
         <div class="modal-content">
 
           <div class="modal-body">
-            <h3>Create Shift</h3>
+            <div class="row x-out-modal">
+              <a href="" data-toggle="modal" data-target="#createShiftModal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+                    <path fill="#B7B7B7" fill-rule="evenodd" d="M8.585 7.5L15 13.916 13.915 15 7.5 8.584 1.085 15 0 13.916 6.415 7.5 0 1.084 1.085 0 7.5 6.416 13.915 0 15 1.084z"/>
+                </svg>
+              </a>
+            </div>
+            <div class="modal-header">Create Shift</div>
             <form action="/createShift" method="post">
-              <div class="form-group">
+              <div class="form-group create-shift-date-form">
                 <label for="formGroupExample">Shift Times</label>
-                <input type="text" class="form-control" name="daterange" value="<%= datePickerDate %>" />
+                <input type="text" class="form-control form-input" name="daterange" value="<%= datePickerDate %>" />
               </div>
-              <div class="form-group">
-                <label for="formGroupExampleInput2"># of Workers</label>
-                <input type="text" class="form-control" id="formGroupExampleInput2" name="workersCount" value="" placeholder="">
+              <div class="form-group create-shift-worker-form">
+                <label for="formGroupExampleInput2">Number of Workers Needed for Shift</label>
+                <input type="text" class="form-control form-input" id="formGroupExampleInput2" name="workersCount" value="" placeholder="# of workers">
               </div>
-              <div class="form-group">
-                <label>Type of Worker Needed</label>
-                <select name="workerType">
+              <div class="form-group create-shift-type-form">
+                <label for="formGroupExample">Type of Worker Needed</label>
+                <select name="workerType" class="form-input-select form-control">
                   <% for(var i=0; i<roles.length; i++) {%>
                     <option value="<%= roles[i]%>"><%= roles[i]%></option>
                   <% } %>
                 </select>
               </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn submit-button">Create</button>
             </form>
           </div>
 
@@ -266,14 +279,36 @@
         <div class="modal-content">
 
           <div class="modal-body">
-            <h3>Invite Employees</h3>
+            <div class="row x-out-modal">
+              <a href="" data-toggle="modal" data-target="#exampleModal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+                    <path fill="#B7B7B7" fill-rule="evenodd" d="M8.585 7.5L15 13.916 13.915 15 7.5 8.584 1.085 15 0 13.916 6.415 7.5 0 1.084 1.085 0 7.5 6.416 13.915 0 15 1.084z"/>
+                </svg>
+              </a>
+            </div>
+            <div class="modal-header">Invite Employees</div>
+
             <form action="/invite" method="post">
-              <div class="form-group">
-                <label for="formGroupExample">Employee Emails</label>
-                <input type="text" class="form-control" name="email1" value=""/>
+              <div id="inviteForm">
+                <div class="form-group row" id="email-1">
+                  <div class="col-md-9">
+                    <label class="form-label2" for="formGroupExampleInput">Email</label>
+                    <input type="email" class="form-control form-input" name="email1" value="" placeholder="name@email.com"/>
+                  </div>
+                  <div class="col-md-2 x-out" onclick="del(1);">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                  </div>
+                </div>
               </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <div class="fake-btn col-md-5 invite-x" id="invite-btn">
+                Add Another
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+                    <path fill="#4A4A4A" fill-rule="evenodd" d="M1.4 12.6h11.2V1.4H1.4v11.2zM0 14h14V0H0v14zm6.3-6.3H4.2V6.3h2.1V4.2h1.4v2.1h2.1v1.4H7.7v2.1H6.3V7.7z"/>
+                </svg>
+              </div>
+              <button type="submit" class="btn submit-button">Invite</button>
             </form>
+
           </div>
 
         </div>
@@ -285,7 +320,7 @@
         2017 Kali. All Rights Reserved.
       </p>
     </footer>
-
+    <script src="/scripts/inviteForm.js"></script>
     <script type="text/javascript">
     $(function() {
         $('input[name="daterange"]').daterangepicker({

@@ -8,6 +8,7 @@ const moment = require('moment');
 const nodemailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport');
 // var mailInfo = require('../config/mail.json');
+var randomNumber = require('random-number');
 User = require('../models/user');
 Company = require('../models/company');
 Shift = require('../models/shift');
@@ -21,10 +22,14 @@ var isAuthenticated = function (req, res, next) {
 	if (req.isAuthenticated())
 		return next();
 	// if the user is not authenticated then redirect him to the login page
-	res.redirect('/');
+	res.redirect('/signin');
 }
 
 module.exports = function(passport){
+
+	router.get('/',(req,res)=>{
+		res.render("splash",{});
+	});
 
   router.get('/login/facebook',
     passport.authenticate('facebook', { scope : ['email','user_friends', 'publish_actions'] }
@@ -34,11 +39,11 @@ module.exports = function(passport){
   router.get('/login/facebook/callback',
     passport.authenticate('facebook', {
       successRedirect : '/home',
-      failureRedirect : '/'
+      failureRedirect : '/signin'
     })
   );
 
-  router.get('/', async (req, res) => {
+  router.get('/signin', async (req, res) => {
 		res.render('index', {});
 	});
 
@@ -124,12 +129,19 @@ module.exports = function(passport){
 			data.employeeCount = 75;
 		}
 
+		var options = {
+		  min:  10000,
+			max:  99999,
+			integer: true
+		}
+		var secretCode = String(randomNumber(options));
+
 		const newCompany = {
 			name:data.company,
 			industry:data.industry,
 			admin:req.user._id,
 			employeeCount: data.employeeCount,
-			secretCode:1234
+			secretCode:secretCode
 		};
 
 		Company.addCompany(newCompany,(error,response)=>{
@@ -181,22 +193,27 @@ module.exports = function(passport){
 		    }
 		});
 
+		var toField = []
+		// add email addresses to List
+		Object.keys(req.body).forEach(key => {
+			if (req.body[key] != "") {
+				toField.push(req.body[key]);
+			}
+		});
+
 		var subjectLine = req.user.firstName+" "+req.user.lastName+" from "
 			+company.name+" has invited you to join Kali"
 
 		var mailOptions={
-		   to : req.body.email1,
+		   to : toField,
 		   subject : subjectLine,
-		   text : "Come Join Kali: http://m.me/HiKaliBot"
-		}
-		console.log(mailOptions);
+		   text : "Come Join Kali: http://m.me/HiKaliBot. Your invite code is "+company.secretCode
+		};
 
 		smtpTransport.sendMail(mailOptions, function(error, response){
 			if(error){
-				console.log(error);
 				res.end("error");
 			}else{
-				console.log("Message sent: " + response.message);
 				res.end("sent");
 			}
 		});
