@@ -98,7 +98,7 @@
           </div>
 
           <div class="cal-week-header col-md-10">
-            <div class="row calendar-grid">
+            <div class="row calendar-grid" id="calendar-grid">
               <div class="hour-labels">
                 <div class="week-header">
 
@@ -351,6 +351,11 @@
       </p>
     </footer>
     <script src="/scripts/inviteForm.js"></script>
+    <% if (shiftDays) { %>
+       <script>
+          shiftDaysData = JSON.parse('<%- JSON.stringify(shiftDays) %>');
+       </script>
+    <% } %>
     <script type="text/javascript">
     $(function() {
         $('input[name="daterange"]').daterangepicker({

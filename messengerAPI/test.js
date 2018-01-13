@@ -8,9 +8,9 @@ const shiftManagerAPI = require('../shiftManagerAPI/main');
 var self =  {
 
   printD: (word)=>{
-    return 0;
+    console.log("FINALY GOT DIS TO WORK",word);
   },
-
+  //LANGUAGE PROCESSING METHODS
   getStartedProcess: (formattedText,senderID) => {
     var text = "Hi👋 I'm Kali. I'll help make sure you never miss a shift. Ready to get started?";
     var quickReplies = [
@@ -54,7 +54,7 @@ var self =  {
       user.save();
 
       sendAPI.sendTextMessage(senderID,
-        ("Looks like you work for "+user.company.name+" ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
+        ("We've connected your account with "+company.name+"'s ✅ Whenever they need you for a shift, I'll send you a message. You can view your messages and shifts via the bottom menu ⬇️"),
         messageIDs.COMPANY_CONFIRMED);
       setTimeout(function(){ self.roleQueryProcess(senderID);}, 1000);
 
@@ -153,7 +153,6 @@ var self =  {
       context.company+" today from "+context.startTime+" to "+context.endTime;
     sendAPI.sendTextMessage(senderID,message);
   }
-
 
 }
 

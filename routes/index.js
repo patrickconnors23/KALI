@@ -47,24 +47,29 @@ module.exports = function(passport){
 		res.render('index', {});
 	});
 
-	router.get('/home1', async (req, res) => {
-		res.render('home1', {});
-	});
-
+	// router.get('/update', (req,res)=>{
+	// 	shiftManagerAPI.checkForUpdate();
+	// 	res.json({});
+	// });
+	
   router.get('/home',async (req,res) => {
-
 		shiftManagerAPI.checkForUpdate();
 
 		const userCompany = await Company.getCompanyByAdmin(req.user._id);
+
 		if (userCompany == null){
 			res.redirect('/personalInfo');
 		}
-
 		const shifts = await Shift.getShiftsByCompany(userCompany._id);
+		// console.log(shifts);
 		const weekShifts = await shiftManagerAPI.getWeeksShifts(shifts);
+
 		const employees = await User.getUserByCompany(userCompany._id);
+
 		const weekInterval = shiftManagerAPI.getWeekInterVal();
+
 		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(weekShifts,weekInterval);
+
 		const dateForDatePicker = shiftManagerAPI.getDatePickerDate();
 
 		res.render('home', {

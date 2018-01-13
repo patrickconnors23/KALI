@@ -40,6 +40,16 @@ module.exports.getCompanies = function (callback, limit) {
     Company.find(callback).limit(limit);
 };
 
+module.exports.getAllCompanies = function () {
+  return Company.find({}).exec()
+    .then((companies) => {
+      return companies;
+    })
+    .catch((err) => {
+      return ("THIS ERROR "+err);
+    });
+}
+
 module.exports.getCompanyById = function (id) {
   return Company.findOne({_id:id}).exec()
     .then((company) => {

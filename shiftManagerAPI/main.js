@@ -10,13 +10,12 @@ var schedule = require('node-schedule');
 var self = {
 
   sendMessages: async(company,shiftID)=>{
-
     var realShift = await Shift.getShiftById(shiftID);
 
     // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(realShift.startTime,realShift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
-
+    
     // get all users associated with the company
     // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
     var employees = await Company.getEmployees(company._id);
@@ -35,16 +34,13 @@ var self = {
     if (realShift.rejectedEmployees != null) {
       deniedInit = realShift.rejectedEmployees.length;
     }
-
     // check how many people have accepted plus messages are out there
     var employeesMessaged = messagedInit - deniedInit;
 
     // Number of employees that we need to reach out to about this shift
     var employeesNeeded = shiftSpots - employeesMessaged;
-
     // UPDATE WITH ABOVE FUNCTION ONCE FIXED
     var orderedEmployees = self.orderEmployees(employees,realShift.role);
-
     // ensure that we only message employees who can work at the time
     var availableEmployees = orderedEmployees.filter((employee)=>{
       return !self.checkIfEmployeeBusy(employee,realShift);
@@ -295,7 +291,6 @@ var self = {
   // return future shifts for a user
   viewShifts: async (messengerID) => {
     var user = await User.getUserByFBID(messengerID);
-    var shifts1 = await Shift.getAllShifts();
     var shifts = await Shift.getUserShifts(user._id);
     // console.log("SHIIIIFTS",shifts);
 

@@ -62,9 +62,13 @@ module.exports.getAllShifts = () => {
 
   async function loop(shifts) {
       var holder = [];
+      const allCompanies = await Company.getAllCompanies();
+      var companyDic = {};
+      allCompanies.forEach((company)=>{
+        companyDic[company._id] = company;
+      })
       for (let i = 0; i < shifts.length; i++) {
           // await new Promise(resolve => setTimeout(resolve, 1000));
-          const sCompany = await Company.getCompanyById(shifts[i].company);
           var shiftObj = {
             startTime: shifts[i].startTime,
             endTime:shifts[i].endTime,
@@ -72,7 +76,7 @@ module.exports.getAllShifts = () => {
             messagedEmployees: shifts[i].messagedEmployees,
             rejectedEmployees: shifts[i].rejectedEmployees,
             employeeCount:shifts[i].employeeCount,
-            company: sCompany,
+            company: companyDic[shifts[i].company],
             role: shifts[i].role,
             _id:shifts[i]._id
           };
@@ -93,10 +97,8 @@ module.exports.getAllShifts = () => {
 }
 
 module.exports.getUserShifts = (id) => {
-  console.log("outer",id);
   return Shift.find({employees:id}).exec()
     .then((shifts) => {
-      console.log("inner",shifts);
       return shifts;
     })
     .catch((err) => {
@@ -106,20 +108,25 @@ module.exports.getUserShifts = (id) => {
 
 module.exports.getShiftsByCompany = (companyID) => {
 
-  async function loop(shifts) {
+  async function loop(shifts,employees,company) {
       var holder = [];
+      var employeeDic = {};
+      employees.forEach((emp)=>{
+        employeeDic[emp._id] = emp;
+      })
       for (let i = 0; i < shifts.length; i++) {
-          const sCompany = await Company.getCompanyById(shifts[i].company);
-          const sEmp = await User.getUsersFromArray(shifts[i].employees)
+          var shiftEmployees = [];
+          shifts[i].employees.forEach((emp)=> {
+            shiftEmployees.push(employeeDic[emp]);
+          });
           var shiftObj = {
             startTime: shifts[i].startTime,
             endTime:shifts[i].endTime,
-            // employees: shifts[i].employees,
-            employees:sEmp,
+            employees:shiftEmployees,
             messagedEmployees: shifts[i].messagedEmployees,
             rejectedEmployees: shifts[i].rejectedEmployees,
             employeeCount:shifts[i].employeeCount,
-            company: sCompany,
+            company: company,
             role: shifts[i].role,
             id:shifts[i]._id,
           };
@@ -130,7 +137,9 @@ module.exports.getShiftsByCompany = (companyID) => {
 
   return Shift.find({company:companyID}).exec()
     .then(async(shifts) => {
-      const shiftsWithEmployees = await loop(shifts);
+      const sCompany = await Company.getCompanyById(shifts[0].company);
+      const sEmp = await User.getUserByCompany(sCompany._id);
+      const shiftsWithEmployees = await loop(shifts,sEmp,sCompany);
       return shiftsWithEmployees;
     })
     .catch((err) => {

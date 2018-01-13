@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "lint": "jshint --exclude node_modules .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "chai": "^4.1.2",
     "config": "^1.26.1",
     "cookie-parser": "^1.4.3",
     "cookie-session": "^1.3.0",
@@ -25,6 +26,7 @@
     "fb": "^2.0.0",
     "fb-get-started-button": "^1.0.1",
     "fbgraph": "^1.4.1",
+    "mocha": "^4.1.0",
     "moment": "^2.18.1",
     "mongo": "^0.1.0",
     "mongodb": "^2.2.30",
