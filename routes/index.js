@@ -51,7 +51,7 @@ module.exports = function(passport){
 	// 	shiftManagerAPI.checkForUpdate();
 	// 	res.json({});
 	// });
-	
+
   router.get('/home',async (req,res) => {
 		shiftManagerAPI.checkForUpdate();
 
@@ -69,7 +69,7 @@ module.exports = function(passport){
 		const weekInterval = shiftManagerAPI.getWeekInterVal();
 
 		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(weekShifts,weekInterval);
-
+		// test
 		const dateForDatePicker = shiftManagerAPI.getDatePickerDate();
 
 		res.render('home', {
