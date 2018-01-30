@@ -137,7 +137,7 @@ module.exports.getShiftsByCompany = (companyID) => {
 
   return Shift.find({company:companyID}).exec()
     .then(async(shifts) => {
-      const sCompany = await Company.getCompanyById(shifts[0].company);
+      const sCompany = await Company.getCompanyById(companyID);
       const sEmp = await User.getUserByCompany(sCompany._id);
       const shiftsWithEmployees = await loop(shifts,sEmp,sCompany);
       return shiftsWithEmployees;

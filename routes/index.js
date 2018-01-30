@@ -61,7 +61,7 @@ module.exports = function(passport){
 			res.redirect('/personalInfo');
 		}
 		const shifts = await Shift.getShiftsByCompany(userCompany._id);
-		// console.log(shifts);
+		
 		const weekShifts = await shiftManagerAPI.getWeeksShifts(shifts);
 
 		const employees = await User.getUserByCompany(userCompany._id);
