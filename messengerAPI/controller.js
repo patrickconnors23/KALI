@@ -6,19 +6,29 @@ const
   https = require('https'),
   request = require('request');
 
-var handleAPI = require('./textHandle');
-var sendAPI = require('./send');
-var messageIDs = require('./messageIDs');
+var processAPI = require('./processinput.js');
+var sendAPI = require('./send.js');
+var messageIDs = require('./messageIDs.js');
 
-// App Secret can be retrieved from the App Dashboard
-const APP_SECRET = config.get('appSecret');
+const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ?
+  process.env.MESSENGER_APP_SECRET :
+  config.get('appSecret');
+
 // Arbitrary value used to validate a webhook
-const VALIDATION_TOKEN = config.get('validationToken');
+const VALIDATION_TOKEN = (process.env.MESSENGER_VALIDATION_TOKEN) ?
+  (process.env.MESSENGER_VALIDATION_TOKEN) :
+  config.get('validationToken');
+
 // Generate a page access token for your page from the App Dashboard
-const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
+const PAGE_ACCESS_TOKEN = (process.env.MESSENGER_PAGE_ACCESS_TOKEN) ?
+  (process.env.MESSENGER_PAGE_ACCESS_TOKEN) :
+  config.get('pageAccessToken');
+
 // URL where the app is running (include protocol). Used to point to scripts and
 // assets located at this address.
-const SERVER_URL = config.get('serverURL');
+const SERVER_URL = (process.env.SERVER_URL) ?
+  (process.env.SERVER_URL) :
+  config.get('serverURL');
 
 var self = {
 
@@ -91,8 +101,8 @@ var self = {
     var watermark = event.read.watermark;
     var sequenceNumber = event.read.seq;
 
-    // console.log("Received message read event for watermark %d and sequence " +
-    //   "number %d", watermark, sequenceNumber);
+    console.log("Received message read event for watermark %d and sequence " +
+      "number %d", watermark, sequenceNumber);
   },
 
   receivedAccountLink: (event) => {
@@ -102,20 +112,20 @@ var self = {
     var status = event.account_linking.status;
     var authCode = event.account_linking.authorization_code;
 
-    // console.log("Received account link event with for user %d with status %s " +
-    //   "and auth code %s ", senderID, status, authCode);
+    console.log("Received account link event with for user %d with status %s " +
+      "and auth code %s ", senderID, status, authCode);
   },
 
   receivedMessage: (event) => {
-    // console.log("EVENT",event);
+    console.log("EVENT",event);
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
     var timeOfMessage = event.timestamp;
     var message = event.message;
 
-    // console.log("Received message for user %d and page %d at %d with message:",
-    //   senderID, recipientID, timeOfMessage);
-    // console.log(JSON.stringify(message));
+    console.log("Received message for user %d and page %d at %d with message:",
+      senderID, recipientID, timeOfMessage);
+    console.log(JSON.stringify(message));
 
     var isEcho = message.is_echo;
     var messageId = message.mid;
@@ -146,44 +156,49 @@ var self = {
     var formattedReply = quickReply.split(':');
     switch (formattedReply[0]) {
       case "YES_START":
-        handleAPI.companyQueryProcess(senderID);
+        processAPI.companyQueryProcess(senderID);
         break;
       case "NO_START":
 
         break;
       case "CAN_WORK":
-        handleAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
         break;
       case "CAN_NOT_WORK":
-        handleAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
+        processAPI.canWorkProcesss(formattedReply[0],formattedReply[1],senderID);
         break;
       case "CANCEL_SHIFT_ID":
-        handleAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
-        break;
-      case "ROLE":
-        handleAPI.receivedRoleProcess(formattedReply[0],formattedReply[1],senderID);
+        processAPI.cancellationProcess(formattedReply[0],formattedReply[1],senderID);
       default:
 
     }
   },
 
-  processTextMessage: async(senderID,messageText) => {
-    var user = await User.getUserByFBID(senderID);
-    self.processText(senderID,messageText,user.lastMessage);
+  processTextMessage: (senderID,messageText) => {
+    User.getUserByFBID(senderID, (error,user) => {
+      if(error){
+        console.log(error);
+      }else{
+        // console.log("USER",user);
+        const lastMessage = user.lastMessage;
+        self.processText(senderID,messageText,lastMessage);
+      }
+    });
   },
 
   processText: (senderID,messageText,lastMessage) => {
     const formattedText = messageText.toLowerCase();
+    // console.log("LAST",lastMessage);
     switch (lastMessage) {
       case "ASK_IF_USER_AVAILABLE_TO_WORK":
-        handleAPI.canWorkProcesss(messageText,senderID);
+        processAPI.canWorkProcesss(messageText,senderID);
         break;
       case messageIDs.QUERY_COMPANY:
-        handleAPI.receiveCompanyCodeProcess(messageText,senderID);
+        processAPI.receiveCompanyCodeProcess(messageText,senderID);
         break;
       default:
         sendAPI.sendTextMessage(senderID,
-          "😔 Sorry, my boss hasn't programmed me to understand complicated messages yet. Try hiting one of your menu buttons ↘️","CANT_UNDERSTAND");
+          "Sorry, I didn't understand that.","CANT_UNDERSTAND");
         break;
 
     }
@@ -203,14 +218,13 @@ var self = {
 
     switch (payload) {
       case 'GET_STARTED':
-        console.log("Hit get started");
-        handleAPI.getStartedProcess("",senderID);
+        processAPI.getStartedProcess("",senderID);
         break;
       case 'VIEW_SHIFTS':
-        handleAPI.viewShiftProcess(senderID);
+        processAPI.viewShiftProcess(senderID);
         break;
       case 'CANCEL_SHIFT':
-        handleAPI.cancelShiftProcess(senderID);
+        processAPI.cancelShiftProcess(senderID);
       default:
         var buttons = [{
           type: "postback",
@@ -225,7 +239,7 @@ var self = {
     var greetingData = {
       setting_type: "greeting",
       greeting:{
-        text:"Hi 👋 I'm Kali, I'm a 🤖 here to help you manage your work schedule."
+        text:"Hi, I'm a ShiftBot, I'll help you manage your work schedule."
       }
     };
     self.createGreetingApi(greetingData);

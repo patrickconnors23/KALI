@@ -1,18 +1,18 @@
 {
   "name": "Kali",
   "version": "1.0.0",
-  "description": "Get started example for Messenger Platform",
+  "description": "Smart scheduling app",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "lint": "jshint --exclude node_modules .",
-    "test": "mocha"
+    "test": "mocha $(find . -name '*.mtest.js')"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/fbsamples/messenger-platform-samples.git"
   },
-  "author": "Facebook",
+  "author": "Patrick Connors",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
@@ -34,7 +34,7 @@
     "node-schedule": "^1.2.4",
     "nodemailer": "^4.4.0",
     "nodemailer-smtp-transport": "^2.7.4",
-    "nodemon": "^1.12.1",
+    "nodemon": "^1.14.11",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "random-number": "^0.0.9",

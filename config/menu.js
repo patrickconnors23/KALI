@@ -26,4 +26,4 @@
 //       "composer_input_disabled":false
 //     }
 //   ]
-// }' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAb8mFlZBi80BAIc4xsAxgb9yeLOZCLaYJa7SoB3WG85lmVlpO38O4bJhGcQMBFCXMVRGzP352j2uEyESCT43YgE25zFaX7EM8gfWcB8BiMjRLFzk3v2LzRRPWhuMQIcfzZCldLjcBY5l8MOLcRrM0g5MHPJmpSFk4HxAPgUAZDZD"
+// }' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAABkBQRZBqQ4BAPZA8jSpCa2FPSB7E5a6ZB2GiKUyUBSEIZBMjEKqHiIPJgpt0zXwgXAiGSXFrGT7IAA1rEJd7MIE54ouaXbHJsUvrWK9fyGZCF3aN8ycvydVUG5GS7R4Sz5WtluWQhAXAHgc7jxCZAG62qAkGgttuC90iFqUqaN3ysmvmqAWN"

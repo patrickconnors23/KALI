@@ -2,17 +2,25 @@ const
   request = require('request'),
   config = require('config');
 
-var User = require('../models/user');
+const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ?
+  process.env.MESSENGER_APP_SECRET :
+  config.get('appSecret');
 
-// App Secret can be retrieved from the App Dashboard
-const APP_SECRET = config.get('appSecret');
 // Arbitrary value used to validate a webhook
-const VALIDATION_TOKEN = config.get('validationToken');
+const VALIDATION_TOKEN = (process.env.MESSENGER_VALIDATION_TOKEN) ?
+  (process.env.MESSENGER_VALIDATION_TOKEN) :
+  config.get('validationToken');
+
 // Generate a page access token for your page from the App Dashboard
-const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
+const PAGE_ACCESS_TOKEN = (process.env.MESSENGER_PAGE_ACCESS_TOKEN) ?
+  (process.env.MESSENGER_PAGE_ACCESS_TOKEN) :
+  config.get('pageAccessToken');
+
 // URL where the app is running (include protocol). Used to point to scripts and
 // assets located at this address.
-const SERVER_URL = config.get('serverURL');
+const SERVER_URL = (process.env.SERVER_URL) ?
+  (process.env.SERVER_URL) :
+  config.get('serverURL');
 
 
 var self = {
@@ -323,7 +331,7 @@ var self = {
     self.callSendAPI(messageData);
   },
 
-  callSendAPI: async(messageData,lastMessageID) => {
+  callSendAPI: (messageData,lastMessageID) => {
     const message = messageData.message;
     var text = ""
     if (message.attachment) {
@@ -341,48 +349,52 @@ var self = {
       method: 'POST',
       json: messageData
 
-    }, async function (error, response, body) {
+    }, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         var recipientId = body.recipient_id;
         var messageId = body.message_id;
-        var user = await User.getUserByFBID(recipientId);
-
-        console.log(messageData.recipient.id);
-        if(!user){
-          request({
-            uri: 'https://graph.facebook.com/v2.6/'+
-            messageData.recipient.id+
-            '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token='+
-            PAGE_ACCESS_TOKEN,
-            method: 'GET',
-            json: messageData
-
-          }, (err,res,bodyUser) =>{
-            console.log("RESPONSE",bodyUser);
-            // first_name,last_name,timezone,profile_pic
-            User.addUser(
-            {
-              fbID:recipientId,
-              lastMessage:"[]",
-              firstName:bodyUser.first_name,
-              lastName:bodyUser.last_name,
-              timeZone:bodyUser.timezone,
-              profilePic:bodyUser.profile_pic,
-              takesShifts:true,
-            },(error,response)=>{
-              if(error){
-                console.log("Create",error);
-              }else{
-                response.lastMessage = text;
-                response.save();
-              }
-            });
-          })
-
+        User.getUserByFBID(recipientId,(error,user)=>{
+          if(error){
+            console.log(error);
           }else{
-            user.lastMessage = lastMessageID;
-            user.save();
+            // console.log("User",user);
+            console.log(messageData.recipient.id);
+            if(!user){
+              request({
+                uri: 'https://graph.facebook.com/v2.6/'+
+                messageData.recipient.id+
+                '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token='+
+                PAGE_ACCESS_TOKEN,
+                method: 'GET',
+                json: messageData
+
+              }, (err,res,bodyUser) =>{
+                console.log("RESPONSE",bodyUser);
+                // first_name,last_name,timezone,profile_pic
+                User.addUser(
+                {
+                  fbID:recipientId,
+                  lastMessage:"[]",
+                  firstName:bodyUser.first_name,
+                  lastName:bodyUser.last_name,
+                  timeZone:bodyUser.timezone,
+                  profilePic:bodyUser.profile_pic
+                },(error,response)=>{
+                  if(error){
+                    console.log("Create",error);
+                  }else{
+                    response.lastMessage = text;
+                    response.save();
+                  }
+                });
+              })
+
+            }else{
+              user.lastMessage = lastMessageID;
+              user.save();
+            }
           }
+        });
 
         if (messageId) {
           // console.log("Successfully sent message with id %s to recipient %s",
@@ -391,8 +403,10 @@ var self = {
         // console.log("Successfully called Send API for recipient %s",
           // recipientId);
         }
+      } else {
+        console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
       }
-    })
+    });
   },
 }
 

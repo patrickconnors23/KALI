@@ -35,14 +35,23 @@ var self =  {
 
   receiveCompanyCodeProcess: async(text,senderID) => {
     const DNE = "🤔 That code doesn't match one I've sent recently. Try double checking your email and typing it again 🔍";
-    var company = await Company.getCompanyByCode(text);
+    
+    try {
+      var company = await Company.getCompanyByCode(text);
+    } catch (e) {
+      console.log(e);
+    }
 
     if (company == null) {
       sendAPI.sendTextMessage(senderID,DNE,messageIDs.QUERY_COMPANY)
     } else {
-
-      var user = await User.getUserByFBID(senderID);
-
+      
+      try {
+        var user = await User.getUserByFBID(senderID);
+      } catch (e) {
+        console.log(e);
+      } 
+      
       if (user.company != null) {
         if (user.company.toString() != company._id.toString()){
           company.employees.push(user._id);
@@ -65,8 +74,13 @@ var self =  {
   roleQueryProcess: async(senderID) => {
     var text = "What's your role 👷 within the company?";
     var quickReplies = [];
-    var user = await User.getUserByFBID(senderID);
-    var company = await Company.getCompanyById(user.company);
+    
+    try {
+      var user = await User.getUserByFBID(senderID);
+      var company = await Company.getCompanyById(user.company);
+    } catch (e) {
+      console.log(e);
+    }
 
     company.roles.forEach((role)=>{
       var newQR = {
@@ -82,9 +96,12 @@ var self =  {
 
   // process the role which the user selected
   receivedRoleProcess: async(rolePrefix,role,senderID) => {
-    var user = await User.getUserByFBID(senderID);
-    var company = await Company.getCompanyById(user.company);
-
+    try {
+      var user = await User.getUserByFBID(senderID);
+      var company = await Company.getCompanyById(user.company);
+    } catch (e) {
+    console.log(e);  
+    }
     // text to send
     const text = "👌 Cool, I'll send you a message whenever "+
       company.name+" needs a "+role+"!";
