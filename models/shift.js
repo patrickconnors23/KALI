@@ -137,9 +137,21 @@ module.exports.getShiftsByCompany = (companyID) => {
 
   return Shift.find({company:companyID}).exec()
     .then(async(shifts) => {
-      const sCompany = await Company.getCompanyById(companyID);
-      const sEmp = await User.getUserByCompany(sCompany._id);
-      const shiftsWithEmployees = await loop(shifts,sEmp,sCompany);
+      try {
+        const sCompany = await Company.getCompanyById(companyID);
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+        const sEmp = await User.getUserByCompany(sCompany._id);
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+        const shiftsWithEmployees = await loop(shifts,sEmp,sCompany);
+      } catch (e) {
+        console.log(e);
+      }
       return shiftsWithEmployees;
     })
     .catch((err) => {
