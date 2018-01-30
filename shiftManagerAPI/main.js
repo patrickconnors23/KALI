@@ -1,3 +1,4 @@
+// git test
 const sendAPI = require('../messengerAPI/send');
 var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
@@ -15,7 +16,7 @@ var self = {
     // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(realShift.startTime,realShift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
-    
+
     // get all users associated with the company
     // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
     var employees = await Company.getEmployees(company._id);
