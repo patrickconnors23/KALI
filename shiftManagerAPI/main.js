@@ -265,11 +265,14 @@ var self = {
   // hardcoded time that we should start looking for workers, will change
   // currently two weeks
   checkForUpdate: async() => {
-    let futureShifts;
-    const shifts = await Shift.getAllShifts();
+    try {
+      var shifts = await Shift.getAllShifts();
+    } catch (e) {
+
+    }
     // only want to deal with shifts that haven't happened yet
     if (shifts) {
-      futureShifts = self.filterShifts(shifts);
+      var futureShifts = self.filterShifts(shifts);
     } else{
       return 0;
     }
@@ -333,14 +336,25 @@ var self = {
 
   // return future shifts for a user
   viewShifts: async (messengerID) => {
-    var user = await User.getUserByFBID(messengerID);
-    var shifts = await Shift.getUserShifts(user._id);
-    // console.log("SHIIIIFTS",shifts);
+    try {
+      var user = await User.getUserByFBID(messengerID);
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      var shifts = await Shift.getUserShifts(user._id);
+    } catch (e) {
+      console.log(e);
+    }
 
     if(shifts != null) {
       var message = "I found your upcoming shifts: \n\n";
       var counter = 0;
-      var futureShifts = await self.filterShifts(shifts);
+      try {
+        var futureShifts = await self.filterShifts(shifts);
+      } catch (e) {
+        console.log(e);
+      }
       if (futureShifts.length > 0){
         futureShifts.forEach((shift)=>{
           var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
@@ -375,7 +389,12 @@ var self = {
           var message = "Which shift would you like to cancel 🤔? Remember, cancelling a shift too close to its scheduled time will make it less likely for you to be picked later.";
           var quickReplies = [];
           var counter = 0;
-          var futureShifts = await self.filterShifts(shifts);
+          try {
+            var futureShifts = await self.filterShifts(shifts);
+          } catch (e) {
+            console.log(e);
+          }
+          
           if (futureShifts.length != 0) {
             // iterate through shifts
             futureShifts.forEach((shift)=>{
