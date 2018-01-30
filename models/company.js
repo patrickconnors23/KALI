@@ -138,7 +138,11 @@ module.exports.getEmployees = (companyID) => {
   // query company for employees
   return User.find({company:companyID,takesShifts:true}).exec()
     .then(async(employees) => {
-      const employeesWithShifts = await loop(employees);
+      try {
+        var employeesWithShifts = await loop(employees);
+      } catch (e) {
+        console.log(e);
+      }
       return employeesWithShifts;
       // return employees;
     })

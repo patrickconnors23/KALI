@@ -62,7 +62,11 @@ module.exports.getAllShifts = () => {
 
   async function loop(shifts) {
       var holder = [];
-      const allCompanies = await Company.getAllCompanies();
+      try {
+        var allCompanies = await Company.getAllCompanies();
+      } catch (e) {
+        console.log(e);
+      }
       var companyDic = {};
       allCompanies.forEach((company)=>{
         companyDic[company._id] = company;
@@ -87,7 +91,12 @@ module.exports.getAllShifts = () => {
 
   return Shift.find({}).exec()
     .then(async(shifts) => {
-      const shiftsWithCompanies = await loop(shifts);
+      let shiftsWithCompanies;
+      try {
+        shiftsWithCompanies = await loop(shifts);
+      } catch (e) {
+        console.log(e);
+      }
       return shiftsWithCompanies;
     })
     .catch((err) => {
@@ -108,7 +117,7 @@ module.exports.getUserShifts = (id) => {
 
 module.exports.getShiftsByCompany = (companyID) => {
 
-  async function loop(shifts,employees,company) {
+  function loop(shifts,employees,company) {
       var holder = [];
       var employeeDic = {};
       employees.forEach((emp)=>{
@@ -137,22 +146,18 @@ module.exports.getShiftsByCompany = (companyID) => {
 
   return Shift.find({company:companyID}).exec()
     .then(async(shifts) => {
+      let sCompany,sEmp;
       try {
-        const sCompany = await Company.getCompanyById(companyID);
+        sCompany = await Company.getCompanyById(companyID);
       } catch (e) {
         console.log(e);
       }
       try {
-        const sEmp = await User.getUserByCompany(sCompany._id);
+        sEmp = await User.getUserByCompany(sCompany._id);
       } catch (e) {
         console.log(e);
       }
-      try {
-        const shiftsWithEmployees = await loop(shifts,sEmp,sCompany);
-      } catch (e) {
-        console.log(e);
-      }
-      return shiftsWithEmployees;
+      return loop(shifts,sEmp,sCompany);
     })
     .catch((err) => {
       return ("error occured "+err);

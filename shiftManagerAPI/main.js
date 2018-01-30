@@ -11,8 +11,11 @@ var schedule = require('node-schedule');
 var self = {
 
   sendMessages: async(company,shiftID)=>{
-    var realShift = await Shift.getShiftById(shiftID);
-
+    try {
+      var realShift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }
     // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(realShift.startTime,realShift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
@@ -20,7 +23,6 @@ var self = {
     // get all users associated with the company
     // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
     var employees = await Company.getEmployees(company._id);
-
     // total number of employees needed
     var shiftSpots = realShift.employeeCount;
 
@@ -228,9 +230,14 @@ var self = {
   // hardcoded time that we should start looking for workers, will change
   // currently two weeks
   checkForUpdate: async() => {
+    let futureShifts;
     const shifts = await Shift.getAllShifts();
     // only want to deal with shifts that haven't happened yet
-    var futureShifts = self.filterShifts(shifts);
+    if (shifts) {
+      futureShifts = self.filterShifts(shifts);
+    } else{
+      return 0;
+    }
     // get the current date to compare shifts to
     var currentDate = moment();
     // iterate through all future shifts
