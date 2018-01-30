@@ -21,8 +21,11 @@ var self = {
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
 
     // get all users associated with the company
-    // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
-    var employees = await Company.getEmployees(company._id);
+    try {
+      var employees = await Company.getEmployees(company._id);
+    } catch (e) {
+      console.log(e);
+    }
     // total number of employees needed
     var shiftSpots = realShift.employeeCount;
 
@@ -73,7 +76,11 @@ var self = {
       // iterate through list of employees and message them
       employeesToMessage.forEach(async(employee)=>{
         // current employee object is read only, need actual doc
-        const writeEmployee = await User.getUserById(employee._id);
+        try {
+          var writeEmployee = await User.getUserById(employee._id);
+        } catch (e) {
+          console.log(e);
+        }
         writeEmployee.hasMessage = true;
         writeEmployee.save();
         employeesMessaged++;
@@ -132,15 +139,29 @@ var self = {
   },
 
   userRespondedToQuery: async(messengerID) => {
-    var user = await User.getUserByFBID(messengerID);
+    try {
+      var user = await User.getUserByFBID(messengerID);
+    } catch (e) {
+      console.log(e);
+    }
     user.hasMessage = false;
     user.save();
   },
 
   shiftDenied: async(shiftID,userMessengerID) => {
-    var shift = await Shift.getShiftById(shiftID);
-    var user = await User.getUserByFBID(userMessengerID);
-    var company = await Company.getCompanyById(shift.company);
+    try {
+      var shift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var user = await User.getUserByFBID(userMessengerID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var company = await Company.getCompanyById(shift.company);
+    } catch (e) {
+      console.log(e);
+    }
 
     shift.rejectedEmployees.push(user._id);
     shift.save();
@@ -149,9 +170,19 @@ var self = {
   },
 
   shiftAccepted: async(shiftID,senderID) => {
-    var shift = await Shift.getShiftById(shiftID);
-    var user = await User.getUserByFBID(senderID);
-    var company = await Company.getCompanyById(shift.company);
+    try {
+      var shift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var user = await User.getUserByFBID(senderID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var company = await Company.getCompanyById(shift.company);
+    } catch (e) {
+      console.log(e);
+    }
 
     var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
@@ -177,7 +208,11 @@ var self = {
   },
 
   createShift: async(userID,formData) => {
-    var company = await Company.getCompanyByAdmin(userID);
+    try {
+      var company = await Company.getCompanyByAdmin(userID);
+    } catch (e) {
+      console.log(e);
+    }
 
     var dateRange = formData.daterange.split('-');
     var startDate = dateRange[0].trim();;
