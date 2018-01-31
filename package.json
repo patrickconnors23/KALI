@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "lint": "jshint --exclude node_modules .",
-    "test": "mocha"
+    "test": "mocha */*.mtest.js"
   },
   "repository": {
     "type": "git",
