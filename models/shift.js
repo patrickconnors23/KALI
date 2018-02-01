@@ -3,6 +3,8 @@ db = require('./mong');
 var graph = require('fbgraph');
 var FB = require('fb');
 var request = require('request-promise');
+var Company = require('./company.js');
+var User = require('./user.js');
 
 var Schema = mongoose.Schema;
 
@@ -108,6 +110,7 @@ module.exports.getAllShifts = () => {
 module.exports.getUserShifts = (id) => {
   return Shift.find({employees:id}).exec()
     .then((shifts) => {
+      console.log(shifts);
       return shifts;
     })
     .catch((err) => {

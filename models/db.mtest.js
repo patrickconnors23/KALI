@@ -39,6 +39,79 @@ describe('Database Tests', function() {
 
       manager.save(done);
     });
+    it('Should create new company', async function () {
+      var manager = await User.getUserByFBID("1234");
+      var company = Company({
+        name:"El Jefe's",
+        admin:manager._id,
+        employees:[],
+        roles:['Bartender','Waiter'],
+        industry:"Hospitality",
+        secretCode:"12345",
+        shifts:[],
+      });
+      company.save();
+    });
+    it('Should save employees to database', async function() {
+      var company = await Company.getCompanyByCode("12345");
+      var map = {0:"Bartender",1:"Waiter"};
+      for (var i=0;i<10;i++){
+        var employee = User({
+          fbID:"1234"+i,
+          firstName:"Pat"+i,
+          lastName:"Connors"+(2*i),
+          role:map[i % 2],
+          email:"p@g.com",
+          takesShifts:true,
+          company:company._id
+        });
+        employee.save();
+      }
+    });
+    it('Should create new shifts without employees',async function () {
+      var company = await Company.getCompanyByCode('12345');
+      var employees = await User.getUserByCompany(company._id);
+      var map = {0:"Bartender",1:"Waiter"};
+      for (var i=0;i<4;i++){
+        var shift = Shift({
+          employees:[],
+          employeeCount:3,
+          company:company._id,
+          role:map[i % 2],
+        })
+        shift.save();
+      }
+    });
+    it('Should create 3 waiter shifts and assign them to emp1',async function () {
+      var company = await Company.getCompanyByCode('12345');
+      var employee = await User.getUserByFBID("12340");
+      for (var i=0;i<3;i++){
+        var shift = Shift({
+          employees:[employee._id],
+          employeeCount:1,
+          company:company._id,
+          role:'Bartender',
+        });
+        shift.save();
+      }
+      var shifts = await Shift.getUserShifts(employee._id);
+      var companyShifts = await Shift.getShiftsByCompany(company._id);
+      expect(companyShifts.length).to.equal(7);
+      expect(shifts.length).to.equal(3);
+    });
+    it('Should create new shifts and assign them to existing emps',async function () {
+      var company = await Company.getCompanyByCode('12345');
+      var employees = await User.getUserByCompany(company._id);
+      for (var i=0;i<3;i++){
+        var shift = Shift({
+          employees:[],
+          employeeCount:3,
+          company:company._id,
+          role:"Bartender",
+        })
+        shift.save()
+      }
+    });
     it('Should retrieve data from test database', function(done) {
       //Look up the 'Mike' object previously saved.
       User.find({firstName: 'Pat'}, (err, name) => {
