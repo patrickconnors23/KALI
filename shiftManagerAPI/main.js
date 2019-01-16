@@ -1,3 +1,4 @@
+// git test
 const sendAPI = require('../messengerAPI/send');
 var User = require('../models/user.js');
 var Shift = require('../models/shift.js');
@@ -10,16 +11,21 @@ var schedule = require('node-schedule');
 var self = {
 
   sendMessages: async(company,shiftID)=>{
-    var realShift = await Shift.getShiftById(shiftID);
-
+    try {
+      var realShift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }
     // format time object in a readable fashion and set context variables for message
     var fmtTimes = self.parseShiftTime(realShift.startTime,realShift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:realShift._id};
-    
-    // get all users associated with the company
-    // User.find({company:company._id},async(error,employees)=>{ OLD CALLBACK FUNCTION
-    var employees = await Company.getEmployees(company._id);
 
+    // get all users associated with the company
+    try {
+      var employees = await Company.getEmployees(company._id);
+    } catch (e) {
+      console.log(e);
+    }
     // total number of employees needed
     var shiftSpots = realShift.employeeCount;
 
@@ -70,7 +76,11 @@ var self = {
       // iterate through list of employees and message them
       employeesToMessage.forEach(async(employee)=>{
         // current employee object is read only, need actual doc
-        const writeEmployee = await User.getUserById(employee._id);
+        try {
+          var writeEmployee = await User.getUserById(employee._id);
+        } catch (e) {
+          console.log(e);
+        }
         writeEmployee.hasMessage = true;
         writeEmployee.save();
         employeesMessaged++;
@@ -129,15 +139,29 @@ var self = {
   },
 
   userRespondedToQuery: async(messengerID) => {
-    var user = await User.getUserByFBID(messengerID);
+    try {
+      var user = await User.getUserByFBID(messengerID);
+    } catch (e) {
+      console.log(e);
+    }
     user.hasMessage = false;
     user.save();
   },
 
   shiftDenied: async(shiftID,userMessengerID) => {
-    var shift = await Shift.getShiftById(shiftID);
-    var user = await User.getUserByFBID(userMessengerID);
-    var company = await Company.getCompanyById(shift.company);
+    try {
+      var shift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var user = await User.getUserByFBID(userMessengerID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var company = await Company.getCompanyById(shift.company);
+    } catch (e) {
+      console.log(e);
+    }
 
     shift.rejectedEmployees.push(user._id);
     shift.save();
@@ -146,9 +170,19 @@ var self = {
   },
 
   shiftAccepted: async(shiftID,senderID) => {
-    var shift = await Shift.getShiftById(shiftID);
-    var user = await User.getUserByFBID(senderID);
-    var company = await Company.getCompanyById(shift.company);
+    try {
+      var shift = await Shift.getShiftById(shiftID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var user = await User.getUserByFBID(senderID);
+    } catch (e) {
+      console.log(e);
+    }try {
+      var company = await Company.getCompanyById(shift.company);
+    } catch (e) {
+      console.log(e);
+    }
 
     var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
     const context = {company:company.name,date:fmtTimes.date,startTime:fmtTimes.startTime,endTime:fmtTimes.endTime,shiftID:shift._id};
@@ -174,7 +208,11 @@ var self = {
   },
 
   createShift: async(userID,formData) => {
-    var company = await Company.getCompanyByAdmin(userID);
+    try {
+      var company = await Company.getCompanyByAdmin(userID);
+    } catch (e) {
+      console.log(e);
+    }
 
     var dateRange = formData.daterange.split('-');
     var startDate = dateRange[0].trim();;
@@ -227,9 +265,17 @@ var self = {
   // hardcoded time that we should start looking for workers, will change
   // currently two weeks
   checkForUpdate: async() => {
-    const shifts = await Shift.getAllShifts();
+    try {
+      var shifts = await Shift.getAllShifts();
+    } catch (e) {
+
+    }
     // only want to deal with shifts that haven't happened yet
-    var futureShifts = self.filterShifts(shifts);
+    if (shifts) {
+      var futureShifts = self.filterShifts(shifts);
+    } else{
+      return 0;
+    }
     // get the current date to compare shifts to
     var currentDate = moment();
     // iterate through all future shifts
@@ -290,14 +336,25 @@ var self = {
 
   // return future shifts for a user
   viewShifts: async (messengerID) => {
-    var user = await User.getUserByFBID(messengerID);
-    var shifts = await Shift.getUserShifts(user._id);
-    // console.log("SHIIIIFTS",shifts);
+    try {
+      var user = await User.getUserByFBID(messengerID);
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      var shifts = await Shift.getUserShifts(user._id);
+    } catch (e) {
+      console.log(e);
+    }
 
     if(shifts != null) {
       var message = "I found your upcoming shifts: \n\n";
       var counter = 0;
-      var futureShifts = await self.filterShifts(shifts);
+      try {
+        var futureShifts = await self.filterShifts(shifts);
+      } catch (e) {
+        console.log(e);
+      }
       if (futureShifts.length > 0){
         futureShifts.forEach((shift)=>{
           var fmtTimes = self.parseShiftTime(shift.startTime,shift.endTime);
@@ -332,7 +389,12 @@ var self = {
           var message = "Which shift would you like to cancel 🤔? Remember, cancelling a shift too close to its scheduled time will make it less likely for you to be picked later.";
           var quickReplies = [];
           var counter = 0;
-          var futureShifts = await self.filterShifts(shifts);
+          try {
+            var futureShifts = await self.filterShifts(shifts);
+          } catch (e) {
+            console.log(e);
+          }
+          
           if (futureShifts.length != 0) {
             // iterate through shifts
             futureShifts.forEach((shift)=>{

@@ -79,7 +79,6 @@ module.exports.getUsersFromArray = function (ids) {
 module.exports.getUserByFBID = function (id) {
   return User.findOne({fbID:id}).exec()
     .then((user) => {
-      console.log(user);
       return user;
     })
     .catch((err) => {

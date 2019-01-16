@@ -55,21 +55,34 @@ module.exports = function(passport){
   router.get('/home',async (req,res) => {
 		shiftManagerAPI.checkForUpdate();
 
-		const userCompany = await Company.getCompanyByAdmin(req.user._id);
+		try {
+			var userCompany = await Company.getCompanyByAdmin(req.user._id);
+		} catch (e) {
+			console.log(e);
+		}
 
 		if (userCompany == null){
 			res.redirect('/personalInfo');
 		}
-		const shifts = await Shift.getShiftsByCompany(userCompany._id);
-		// console.log(shifts);
-		const weekShifts = await shiftManagerAPI.getWeeksShifts(shifts);
 
-		const employees = await User.getUserByCompany(userCompany._id);
+		try {
+			var shifts = await Shift.getShiftsByCompany(userCompany._id);
+		} catch (e) {
+			console.log(e);
+		}try {
+			var weekShifts = await shiftManagerAPI.getWeeksShifts(shifts);
+		} catch (e) {
+			console.log(e);
+		}try {
+			var employees = await User.getUserByCompany(userCompany._id);
+		} catch (e) {
+			console.log(e);
+		}
 
 		const weekInterval = shiftManagerAPI.getWeekInterVal();
 
 		const formattedShifts = shiftManagerAPI.formatShiftsForInterface(weekShifts,weekInterval);
-		// test
+
 		const dateForDatePicker = shiftManagerAPI.getDatePickerDate();
 
 		res.render('home', {
@@ -165,7 +178,11 @@ module.exports = function(passport){
 	router.post('/companyRoles',async (req,res) => {
 		const data = req.body;
 
-		var userCompany = await Company.getCompanyByAdmin(req.user._id);
+		try {
+			var userCompany = await Company.getCompanyByAdmin(req.user._id);
+		} catch (e) {
+			console.log(e);
+		}
 
 		Object.keys(data).forEach(key => {
 				if (!userCompany.roles.includes(data[key])) {
@@ -188,7 +205,11 @@ module.exports = function(passport){
   });
 
 	router.post('/invite',async(req,res) => {
-		const company = await Company.getCompanyByAdmin(req.user._id);
+		try {
+			var company = await Company.getCompanyByAdmin(req.user._id);
+		} catch (e) {
+			console.log(e);
+		}
 		var smtpTransport = nodemailer.createTransport({
 		    service: "gmail",
 		    host: "smtp.gmail.com",

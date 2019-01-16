@@ -112,9 +112,16 @@ module.exports.getEmployees = (companyID) => {
   async function loop(employees) {
       var holder = [];
       for (let i = 0; i < employees.length; i++) {
-          // await new Promise(resolve => setTimeout(resolve, 1000));
-          const shifts = await shift(employees[i]._id);
-          const rShifts = await rejectedShifts(employees[i]._id);
+          try {
+            var shifts = await shift(employees[i]._id);
+          } catch (e) {
+            console.log(e);
+          }
+          try {
+            var rShifts = await rejectedShifts(employees[i]._id);
+          } catch (e) {
+            console.log(e);
+          }
           var employeeObj = {
               _id: employees[i]._id,
               fbID: employees[i].fbID,
@@ -138,9 +145,12 @@ module.exports.getEmployees = (companyID) => {
   // query company for employees
   return User.find({company:companyID,takesShifts:true}).exec()
     .then(async(employees) => {
-      const employeesWithShifts = await loop(employees);
+      try {
+        var employeesWithShifts = await loop(employees);
+      } catch (e) {
+        console.log(e);
+      }
       return employeesWithShifts;
-      // return employees;
     })
     .catch((err) => {
       return 'THAT ERROR '+err;
